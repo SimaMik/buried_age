@@ -8,7 +8,6 @@ import com.sima.buriedage.item.HephaestusHammerItem;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.SpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -29,10 +28,6 @@ public final class ModItems {
 
     public static final DeferredItem<BlockItem> CAVITY_MARKER =
             ITEMS.registerSimpleBlockItem(ModBlocks.CAVITY_MARKER);
-
-    public static final DeferredItem<SpawnEggItem> ECHO_SPAWN_EGG =
-            ITEMS.registerItem("echo_spawn_egg", SpawnEggItem::new,
-                    p -> p.spawnEgg(ModEntities.ECHO.get()));
 
     public static final DeferredItem<Item> LIGHTNING_POTTERY_SHERD = ITEMS.registerSimpleItem("lightning_pottery_sherd");
     public static final DeferredItem<Item> LYRE_POTTERY_SHERD = ITEMS.registerSimpleItem("lyre_pottery_sherd");
