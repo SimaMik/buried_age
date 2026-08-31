@@ -17,11 +17,9 @@ public class ModEnchantmentTagsProvider extends EnchantmentTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider registries) {
-        // The blueprint pool. Composition lives in BlueprintPool so the advancements can read it too.
         var pool = this.tag(ModEnchantments.BLUEPRINT_POOL);
         BlueprintPool.ENTRIES.forEach(pool::add);
 
-        // Appended to vanilla so the new enchantment sorts with the rest on a tooltip.
         this.tag(EnchantmentTags.TOOLTIP_ORDER).add(ModEnchantments.WRATH_OF_ZEUS);
     }
 }

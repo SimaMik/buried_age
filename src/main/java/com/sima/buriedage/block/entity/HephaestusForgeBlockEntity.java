@@ -3,7 +3,6 @@ package com.sima.buriedage.block.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sima.buriedage.TheBuriedAge;
 import com.sima.buriedage.block.HephaestusForgeBlock;
 import com.sima.buriedage.item.AncientBlueprintItem;
 import com.sima.buriedage.registry.ModBlockEntities;
@@ -33,7 +32,6 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -46,39 +44,27 @@ public class HephaestusForgeBlockEntity extends BlockEntity {
     public static final int SLOT_CATALYST = 1;
     public static final int SLOT_TARGET = 2;
     public static final int HITS_TO_FORGE = 3;
-    /** Minimum ticks between two accepted hammer strikes. */
     public static final int HIT_COOLDOWN = 10;
 
-    // ---- Where the success glyph column appears. Safe to retune; see ROADMAP. ----
-    /** Offsets from the block corner. 0.5 is the middle of the block. */
     public static final double GLYPH_COLUMN_X = 0.5;
     public static final double GLYPH_COLUMN_Z = 0.5;
-    /** Height above the block where the column starts. */
     public static final double GLYPH_COLUMN_BASE_Y = 1.0;
-    /** How many rungs the column is built from, and how far apart they sit. */
     public static final int GLYPH_COLUMN_STEPS = 6;
     public static final double GLYPH_COLUMN_STEP_HEIGHT = 0.35;
-    /** Glyphs per rung. Raise for a denser column; vanilla caps how long each one lives. */
     public static final int GLYPH_PARTICLES_PER_STEP = 18;
 
-    /** Key inside the target minecraft:custom_data listing enchantments already upgraded here. */
     private static final String UPGRADED_KEY = "buried_age_upgraded";
 
     private ItemStack blueprint = ItemStack.EMPTY;
     private ItemStack catalyst = ItemStack.EMPTY;
     private ItemStack target = ItemStack.EMPTY;
     private int hits;
-    /** Starts one full cooldown in the past, so the first strike always lands. Long.MIN_VALUE would
-     * overflow the subtraction below and swallow every hit. */
     private long lastHitTick = -HIT_COOLDOWN;
-    /** Slot ids in the order they were filled, so an empty hand hands back the newest one first. */
     private final List<Integer> insertionOrder = new ArrayList<>();
 
     public HephaestusForgeBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.HEPHAESTUS_FORGE.get(), pos, state);
     }
-
-    // ---------------------------------------------------------------- contents
 
     public ItemStack getBlueprint() {
         return this.blueprint;
@@ -112,7 +98,6 @@ public class HephaestusForgeBlockEntity extends BlockEntity {
         }
     }
 
-    /** Takes one item out of the hand into the given slot. Fails if the slot is taken. */
     public boolean insert(int slot, ItemStack held) {
         if (!this.getSlot(slot).isEmpty()) {
             return false;
@@ -126,7 +111,6 @@ public class HephaestusForgeBlockEntity extends BlockEntity {
         return true;
     }
 
-    /** Hands the most recently inserted item back. Returns false if the forge is empty. */
     public boolean returnLastInserted(Player player) {
         for (int i = this.insertionOrder.size() - 1; i >= 0; i--) {
             int slot = this.insertionOrder.get(i);
@@ -144,7 +128,6 @@ public class HephaestusForgeBlockEntity extends BlockEntity {
             }
         }
 
-        // Nothing recorded: the contents came from a structure template, so fall back to a fixed order.
         for (int slot : new int[] { SLOT_TARGET, SLOT_CATALYST, SLOT_BLUEPRINT }) {
             ItemStack stack = this.getSlot(slot);
             if (!stack.isEmpty()) {
@@ -175,11 +158,7 @@ public class HephaestusForgeBlockEntity extends BlockEntity {
         }
     }
 
-    // ---------------------------------------------------------------- ritual
-
-    /** One hammer strike. Returns false only when the strike was swallowed by the cooldown. */
     public boolean strike(ServerLevel level, BlockPos pos, @Nullable Player player) {
-        // Cooldown first, so an unloaded forge cannot be spam-clicked either.
         long now = level.getGameTime();
         if (now - this.lastHitTick < HIT_COOLDOWN) {
             return false;
@@ -193,15 +172,11 @@ public class HephaestusForgeBlockEntity extends BlockEntity {
             return true;
         }
 
-        // Checked on every strike, not just the third: a pairing that cannot work never starts
-        // forging at all, so the player is told immediately instead of after three wasted swings.
         Verdict verdict = this.verdict();
         if (!verdict.allowed()) {
             this.hits = 0;
             playRejected(level, pos);
             tell(player, verdict.refusal());
-            TheBuriedAge.LOGGER.debug("[forge] refused at {}: {} | blueprint={} target={}",
-                    pos, verdict.refusal().getString(), this.blueprint, this.target);
             this.markUpdated();
             return true;
         }
@@ -234,7 +209,6 @@ public class HephaestusForgeBlockEntity extends BlockEntity {
         return true;
     }
 
-    /** What the forge would do with its current contents, or why it refuses to do anything. */
     private record Verdict(@Nullable Holder<Enchantment> enchantment, int newLevel, @Nullable Component refusal) {
         static Verdict refuse(Component reason) {
             return new Verdict(null, 0, reason);
@@ -272,8 +246,6 @@ public class HephaestusForgeBlockEntity extends BlockEntity {
             return Verdict.allow(enchantment, 1);
         }
 
-        // Asked first: once forged, the level sits above the cap, so the level check below would
-        // otherwise answer a second attempt with a confusing "needs level 3, has level 4".
         if (wasUpgradedHere(this.target, enchantment)) {
             return Verdict.refuse(Component.translatable("message.buried_age.forge.reject.already_upgraded",
                     enchantment.value().description()));
@@ -291,8 +263,6 @@ public class HephaestusForgeBlockEntity extends BlockEntity {
     private void applyForge(Verdict verdict) {
         Holder<Enchantment> enchantment = verdict.enchantment();
         DataComponentType<ItemEnchantments> componentType = EnchantmentHelper.getComponentType(this.target);
-        // Straight into the component: ItemEnchantments accepts 1..255 and never consults the
-        // enchantment max level, which is exactly what puts the result one step above the cap.
         ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(
                 this.target.getOrDefault(componentType, ItemEnchantments.EMPTY));
         mutable.set(enchantment, verdict.newLevel());
@@ -300,7 +270,6 @@ public class HephaestusForgeBlockEntity extends BlockEntity {
         markUpgradedHere(this.target, enchantment);
     }
 
-    /** Feedback goes to the action bar: the forge has no GUI, so this is the only way it can explain itself. */
     private static void tell(@Nullable Player player, Component message) {
         if (player instanceof ServerPlayer serverPlayer) {
             serverPlayer.sendSystemMessage(message, true);
@@ -321,8 +290,6 @@ public class HephaestusForgeBlockEntity extends BlockEntity {
             tag.put(UPGRADED_KEY, upgraded);
         });
     }
-
-    // ---------------------------------------------------------------- feedback
 
     private static void playDull(ServerLevel level, BlockPos pos) {
         level.playSound(null, pos, SoundEvents.ANVIL_LAND, SoundSource.BLOCKS, 0.4F, 0.5F);
@@ -347,19 +314,12 @@ public class HephaestusForgeBlockEntity extends BlockEntity {
         }
     }
 
-
-
-    // ---------------------------------------------------------------- storage
-
     private void markUpdated() {
         this.setChanged();
         if (this.level == null) {
             return;
         }
 
-        // The model only knows "scroll pinned to the stele" or not — that's the one thing it was
-        // actually built to show — so that's the one thing the block state tracks. Same block,
-        // so setBlock keeps this entity alive.
         BlockState current = this.getBlockState();
         if (current.hasProperty(HephaestusForgeBlock.HAS_BLUEPRINT)) {
             boolean hasBlueprint = !this.blueprint.isEmpty();
@@ -421,7 +381,6 @@ public class HephaestusForgeBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    /** The one item the forge accepts as its catalyst. */
     public static boolean isCatalyst(ItemStack stack) {
         return stack.is(Items.DIAMOND_BLOCK);
     }

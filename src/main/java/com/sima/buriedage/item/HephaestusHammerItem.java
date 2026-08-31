@@ -9,7 +9,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 
-/** No damage bonus, no durability: it only exists to strike a charged forge. */
 public class HephaestusHammerItem extends Item {
     public HephaestusHammerItem(Item.Properties properties) {
         super(properties);

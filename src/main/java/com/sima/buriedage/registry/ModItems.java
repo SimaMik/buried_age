@@ -30,7 +30,6 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CAVITY_MARKER =
             ITEMS.registerSimpleBlockItem(ModBlocks.CAVITY_MARKER);
 
-    /** Test-only: echoes are never in a natural spawn pool, so this is the way to summon one. */
     public static final DeferredItem<SpawnEggItem> ECHO_SPAWN_EGG =
             ITEMS.registerItem("echo_spawn_egg", SpawnEggItem::new,
                     p -> p.spawnEgg(ModEntities.ECHO.get()));
@@ -40,7 +39,6 @@ public final class ModItems {
     public static final DeferredItem<Item> HOPLITE_POTTERY_SHERD = ITEMS.registerSimpleItem("hoplite_pottery_sherd");
     public static final DeferredItem<Item> AMPHORA_POTTERY_SHERD = ITEMS.registerSimpleItem("amphora_pottery_sherd");
 
-    /** The four sherds, in the order they appear in the creative tab and in advancement criteria. */
     public static final List<DeferredItem<Item>> SHERDS =
             List.of(LIGHTNING_POTTERY_SHERD, LYRE_POTTERY_SHERD, HOPLITE_POTTERY_SHERD, AMPHORA_POTTERY_SHERD);
 

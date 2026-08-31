@@ -19,13 +19,11 @@ public class ModItemTagsProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider registries) {
-        // melee_weapon is swords and spears; the mace is added back, axes deliberately are not.
         this.tag(ModTags.WRATH_OF_ZEUS_TARGETS)
                 .addTag(ItemTags.MELEE_WEAPON_ENCHANTABLE)
                 .add(Items.MACE);
 
         ModItems.SHERDS.forEach(sherd -> this.tag(ModTags.BURIED_AGE_SHERDS).add(sherd.get()));
-        // Appended to vanilla so our sherds craft into decorated pots like any other.
         ModItems.SHERDS.forEach(sherd -> this.tag(ItemTags.DECORATED_POT_SHERDS).add(sherd.get()));
     }
 }

@@ -20,15 +20,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
-/**
- * Wrath of Zeus: every fourth melee hit calls down a bolt on the victim. The bolt is spawned
- * visual-only so it never sets the world on fire; the damage and the brief burn are applied by hand.
- */
 @EventBusSubscriber(modid = TheBuriedAge.MODID)
 public final class WrathOfZeusHandler {
-    /** Hits needed before the bolt lands. */
     public static final int HITS_PER_BOLT = 4;
-    /** Balance numbers: vanilla lightning_ deals 5, and burns for 8 seconds. */
     public static final float BOLT_DAMAGE = 5.0F;
     public static final float BOLT_BURN_SECONDS = 3.0F;
 
@@ -44,7 +38,6 @@ public final class WrathOfZeusHandler {
             return;
         }
 
-        // Melee only: for arrows and the like the direct entity is the projectile, not the attacker.
         if (event.getSource().getDirectEntity() != attacker) {
             return;
         }
@@ -54,16 +47,16 @@ public final class WrathOfZeusHandler {
             return;
         }
 
+        ItemStack weapon = attacker.getMainHandItem();
+        if (weapon.isEmpty() || !weapon.isEnchanted()) {
+            return;
+        }
+
         Holder<Enchantment> wrath = level.registryAccess()
                 .lookupOrThrow(Registries.ENCHANTMENT)
                 .get(ModEnchantments.WRATH_OF_ZEUS)
                 .orElse(null);
-        if (wrath == null) {
-            return;
-        }
-
-        ItemStack weapon = attacker.getMainHandItem();
-        if (EnchantmentHelper.getItemEnchantmentLevel(wrath, weapon) <= 0) {
+        if (wrath == null || EnchantmentHelper.getItemEnchantmentLevel(wrath, weapon) <= 0) {
             return;
         }
 
@@ -82,7 +75,6 @@ public final class WrathOfZeusHandler {
         if (bolt != null) {
             Vec3 pos = victim.position();
             bolt.snapTo(pos.x, pos.y, pos.z);
-            // Visual only gates both the block fire and the built-in damage, so we do the rest here.
             bolt.setVisualOnly(true);
             level.addFreshEntity(bolt);
         }

@@ -13,14 +13,12 @@ import net.minecraft.advancements.criterion.SimpleCriterionTrigger;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
-/** Fires when the Hephaestus Forge actually completes a ritual, not merely when it is struck. */
 public class ForgeRitualTrigger extends SimpleCriterionTrigger<ForgeRitualTrigger.TriggerInstance> {
     @Override
     public Codec<TriggerInstance> codec() {
         return TriggerInstance.CODEC;
     }
 
-    /** @param forged the item as it looks after the upgrade */
     public void trigger(ServerPlayer player, ItemStack forged) {
         this.trigger(player, instance -> instance.matches(forged));
     }

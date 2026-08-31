@@ -15,13 +15,11 @@ public final class ModDataComponents {
     public static final DeferredRegister.DataComponents COMPONENTS =
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, TheBuriedAge.MODID);
 
-    /** Which enchantment an Ancient Blueprint carries. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Holder<Enchantment>>> BLUEPRINT_ENCHANTMENT =
             COMPONENTS.registerComponentType("blueprint_enchantment", b -> b
                     .persistent(Enchantment.CODEC)
                     .networkSynchronized(Enchantment.STREAM_CODEC));
 
-    /** Melee hit counter for Wrath of Zeus, stored on the weapon. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WRATH_HITS =
             COMPONENTS.registerComponentType("wrath_hits", b -> b
                     .persistent(Codec.INT)

@@ -21,22 +21,12 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * A ghost of somebody who lived here. Pure decoration: no AI, no pathfinding, no drops, never
- * saved. Everything it does is a small timer-driven state machine, see {@link EchoTuning}.
- *
- * <p>It extends LivingEntity only so the vanilla villager model and its profession clothing can be
- * reused by the renderer; nothing about it is alive in the gameplay sense.
- */
 public class EchoEntity extends LivingEntity {
-    /** Which villager look this echo wears. Index into {@link EchoTuning#PROFESSIONS}. */
     private static final EntityDataAccessor<Integer> DATA_PROFESSION =
             SynchedEntityData.defineId(EchoEntity.class, EntityDataSerializers.INT);
-    /** 0..1, drives the fade in the renderer. */
     private static final EntityDataAccessor<Float> DATA_OPACITY =
             SynchedEntityData.defineId(EchoEntity.class, EntityDataSerializers.FLOAT);
 
-    /** What this echo is doing with its brief existence. */
     public enum Mode {
         DRIFT,
         WANDER,
@@ -47,16 +37,13 @@ public class EchoEntity extends LivingEntity {
     private int age;
     private int lifetime = EchoTuning.DRIFT_LIFETIME_MIN;
     private Vec3 heading = Vec3.ZERO;
-    /** False until someone has given this echo a life to live. */
     private boolean configured;
     private float speed = EchoTuning.DRIFT_SPEED;
 
-    /** WANDER: alternates walking and pausing. */
     private int scriptStepsLeft;
     private int phaseTicksLeft;
     private boolean paused;
 
-    /** MEETING: where the pair stops, and who the partner is. */
     private Vec3 meetingPoint = Vec3.ZERO;
     private int meetingId = -1;
     private boolean meetingReached;
@@ -65,7 +52,6 @@ public class EchoEntity extends LivingEntity {
         super(type, level);
         this.noPhysics = true;
         this.setNoGravity(true);
-        this.setInvulnerable(false);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -81,9 +67,6 @@ public class EchoEntity extends LivingEntity {
         builder.define(DATA_OPACITY, 1.0F);
     }
 
-    // ---------------------------------------------------------------- setup
-
-    /** Called by the spawner right after the entity is created, before it is added to the level. */
     public void configure(Mode mode, Vec3 heading, int professionIndex) {
         this.configured = true;
         this.mode = mode;
@@ -111,17 +94,14 @@ public class EchoEntity extends LivingEntity {
         }
     }
 
-    /** Gives a life to an echo that was summoned rather than placed by the spawner. Meetings need a
-     * partner, so a lone echo takes that share as a wander instead. */
     private void configureRandomly() {
         float angle = this.random.nextFloat() * Mth.TWO_PI;
         Vec3 direction = new Vec3(Mth.cos(angle), 0.0, Mth.sin(angle));
-        int roll = this.random.nextInt(EchoTuning.WEIGHT_DRIFT + EchoTuning.WEIGHT_WANDER + EchoTuning.WEIGHT_MEETING);
+        int roll = this.random.nextInt(EchoTuning.WEIGHT_DRIFT + EchoTuning.WEIGHT_WANDER);
         Mode picked = roll < EchoTuning.WEIGHT_DRIFT ? Mode.DRIFT : Mode.WANDER;
         this.configure(picked, direction, this.random.nextInt(EchoTuning.PROFESSIONS.length));
     }
 
-    /** MEETING only: where the two of them stop, and the partner to turn towards. */
     public void configureMeeting(Vec3 meetingPoint, EchoEntity partner) {
         this.meetingPoint = meetingPoint;
         this.meetingId = partner.getId();
@@ -139,8 +119,6 @@ public class EchoEntity extends LivingEntity {
         return this.entityData.get(DATA_OPACITY);
     }
 
-    // ---------------------------------------------------------------- behaviour
-
     @Override
     public void tick() {
         super.tick();
@@ -149,8 +127,6 @@ public class EchoEntity extends LivingEntity {
             return;
         }
 
-        // Spawn eggs and /summon build the entity straight from the constructor and never call
-        // configure, which used to leave the heading at zero: the echo just stood there.
         if (!this.configured) {
             this.configureRandomly();
         }
@@ -180,7 +156,6 @@ public class EchoEntity extends LivingEntity {
         this.phaseTicksLeft--;
         if (this.paused) {
             this.bob(EchoTuning.WANDER_PAUSE_BOB);
-            // Busy with something: glance around while standing still.
             if (this.phaseTicksLeft % EchoTuning.WANDER_GLANCE_INTERVAL == 0) {
                 this.yHeadRot = this.getYRot() + (this.random.nextFloat() - 0.5F) * EchoTuning.WANDER_GLANCE_SPREAD;
             }
@@ -224,14 +199,12 @@ public class EchoEntity extends LivingEntity {
         if (this.phaseTicksLeft > 0) {
             this.phaseTicksLeft--;
             this.bob(EchoTuning.MEETING_TALK_BOB);
-            // Turn the head towards the partner for the length of the conversation.
             if (this.level().getEntity(this.meetingId) instanceof EchoEntity partner) {
                 Vec3 toPartner = partner.position().subtract(this.position());
                 this.yHeadRot = (float) (Mth.atan2(toPartner.z, toPartner.x) * 180.0F / Math.PI) - 90.0F;
             }
 
             if (this.phaseTicksLeft == 0) {
-                // Conversation over: walk away in opposite directions.
                 this.heading = this.heading.reverse();
                 this.faceHeading();
             }
@@ -270,7 +243,6 @@ public class EchoEntity extends LivingEntity {
                 this.getZ() + direction.z * blocksPerTick);
     }
 
-    /** Gentle vertical sway so a standing echo never looks frozen. */
     private void bob(float amplitude) {
         double offset = Math.sin((this.age + this.getId()) * EchoTuning.BOB_SPEED) * amplitude;
         this.setPos(this.getX(), this.getY() + offset, this.getZ());
@@ -289,11 +261,8 @@ public class EchoEntity extends LivingEntity {
         return 1.0F;
     }
 
-    // ---------------------------------------------------------------- being a ghost
-
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
-        // Touched by anything at all: dissolve rather than take a hit.
         this.dissolve(level);
         return false;
     }
@@ -304,7 +273,6 @@ public class EchoEntity extends LivingEntity {
         this.discard();
     }
 
-    /** Whisper on arrival. Called by the spawner once the entity is in the level. */
     public void playArrivalSound(ServerLevel level) {
         level.playSound(null, this.getX(), this.getY(), this.getZ(),
                 SoundEvents.SCULK_CLICKING, SoundSource.AMBIENT,
@@ -318,12 +286,10 @@ public class EchoEntity extends LivingEntity {
 
     @Override
     protected void addAdditionalSaveData(ValueOutput output) {
-        // Nothing: echoes never persist.
     }
 
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
-        // Nothing: echoes never persist.
     }
 
     @Override
@@ -333,7 +299,6 @@ public class EchoEntity extends LivingEntity {
 
     @Override
     protected void doPush(net.minecraft.world.entity.Entity other) {
-        // Ghosts do not shove anybody.
     }
 
     @Override
@@ -368,7 +333,6 @@ public class EchoEntity extends LivingEntity {
 
     @Override
     protected void playStepSound(net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
-        // Silent.
     }
 
     @Override

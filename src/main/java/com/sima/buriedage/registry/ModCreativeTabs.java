@@ -23,9 +23,6 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.HEPHAESTUS_FORGE.get());
                         output.accept(ModItems.HEPHAESTUS_HAMMER.get());
                         ModItems.SHERDS.forEach(sherd -> output.accept(sherd.get()));
-                        output.accept(ModItems.CELLA_MARKER.get());
-                        output.accept(ModItems.CAVITY_MARKER.get());
-                        output.accept(ModItems.ECHO_SPAWN_EGG.get());
                         parameters.holders()
                                 .lookupOrThrow(Registries.ENCHANTMENT)
                                 .get(ModEnchantments.BLUEPRINT_POOL)

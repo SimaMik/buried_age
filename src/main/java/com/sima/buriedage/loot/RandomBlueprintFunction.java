@@ -17,13 +17,6 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
-/**
- * Stamps a random enchantment from a tag onto an Ancient Blueprint, so a single loot entry covers
- * the whole pool instead of one entry per enchantment.
- *
- * <pre>{ "function": "buried_age:random_blueprint" }</pre>
- * <p>Optionally takes {@code "pool"} to draw from a different enchantment tag.
- */
 public class RandomBlueprintFunction extends LootItemConditionalFunction {
     public static final MapCodec<RandomBlueprintFunction> MAP_CODEC = RecordCodecBuilder.mapCodec(
             i -> commonFields(i)

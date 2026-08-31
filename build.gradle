@@ -24,7 +24,9 @@ sourceSets.main.resources {
     // Exclude common development only resources from finalized outputs
     exclude("**/*.bbmodel") // BlockBench project files
 
-    exclude("src/generated/**/.cache") // datagen cache files
+    // Datagen cache bookkeeping. The pattern is matched against paths relative to each resource
+    // source dir, so it must not be prefixed with "src/generated/".
+    exclude("**/.cache/**")
 }
 
 repositories {

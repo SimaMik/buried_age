@@ -12,11 +12,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
 
-/**
- * The vanilla anvil clamps any enchantment it touches back to its own max level, so combining a
- * Sharpness VI sword with a Sharpness book would quietly undo the forge. This puts the higher level
- * back into the anvil output; every other anvil behaviour is left alone.
- */
 @EventBusSubscriber(modid = TheBuriedAge.MODID)
 public final class AnvilOvercapHandler {
     private AnvilOvercapHandler() {}

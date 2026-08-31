@@ -4,6 +4,12 @@
     {
       "rolls": 1.0,
       "entries": [
+        { "type": "minecraft:item", "name": "buried_age:hephaestus_hammer" }
+      ]
+    },
+    {
+      "rolls": 1.0,
+      "entries": [
         { "type": "minecraft:item", "name": "buried_age:ancient_blueprint", "weight": 28,
           "functions": [ { "function": "minecraft:set_components", "components": { "buried_age:blueprint_enchantment": "buried_age:wrath_of_zeus" } } ] },
         { "type": "minecraft:empty", "weight": 72 }

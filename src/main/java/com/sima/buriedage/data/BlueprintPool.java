@@ -8,11 +8,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 
-/**
- * Which enchantments an Ancient Blueprint can be found for. Shared by the tag provider and the
- * advancement provider, because a tag cannot be dereferenced while datagen registries are built.
- * Edit here (or the generated tag) to change the pool.
- */
 public final class BlueprintPool {
     public static final List<ResourceKey<Enchantment>> ENTRIES = List.of(
             Enchantments.SHARPNESS,

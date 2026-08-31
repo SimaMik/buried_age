@@ -11,10 +11,6 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Sprite patterns for our four sherds. Registered so the textures are stitched onto the decorated
- * pot atlas; see ROADMAP for the one vanilla hook that is still missing to show them on a pot.
- */
 public final class ModPotPatterns {
     public static final DeferredRegister<DecoratedPotPattern> PATTERNS =
             DeferredRegister.create(Registries.DECORATED_POT_PATTERN, TheBuriedAge.MODID);
@@ -29,8 +25,6 @@ public final class ModPotPatterns {
                 Identifier.fromNamespaceAndPath(TheBuriedAge.MODID, name + "_pottery_pattern")));
     }
 
-    /** Which sherd shows which pattern. Vanilla keeps this in an immutable map we cannot extend,
-     * so DecoratedPotPatternsMixin consults this one first. */
     public static @Nullable ResourceKey<DecoratedPotPattern> forItem(Item item) {
         if (item == ModItems.LIGHTNING_POTTERY_SHERD.get()) {
             return LIGHTNING.getKey();

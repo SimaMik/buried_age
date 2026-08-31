@@ -1,7 +1,7 @@
 {
   "parent": "buried_age:legacy",
   "display": {
-    "icon": { "id": "minecraft:lightning__rod" },
+    "icon": { "id": "minecraft:lightning_rod" },
     "title": { "translate": "advancements.buried_age.wrath.title" },
     "description": { "translate": "advancements.buried_age.wrath.description" },
     "frame": "challenge",

@@ -5,7 +5,6 @@ import com.sima.buriedage.block.HephaestusForgeBlock;
 import com.sima.buriedage.block.MarkerBlock;
 
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -23,10 +22,8 @@ public final class ModBlocks {
                     .sound(SoundType.ANVIL)
                     .noOcclusion());
 
-    /** Marks the temple cella so the location advancement can fire. Stays in the world. */
     public static final DeferredBlock<MarkerBlock> CELLA_MARKER = marker("cella_marker");
 
-    /** Marks a room that must stay a real cavity. The structure processor turns it back into air. */
     public static final DeferredBlock<MarkerBlock> CAVITY_MARKER = marker("cavity_marker");
 
     private static DeferredBlock<MarkerBlock> marker(String name) {

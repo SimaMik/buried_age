@@ -16,10 +16,6 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import org.jspecify.annotations.Nullable;
 
-/**
- * One item, many variants: the carried enchantment lives in a data component, the way enchanted
- * books carry their enchantments.
- */
 public class AncientBlueprintItem extends Item {
     public AncientBlueprintItem(Item.Properties properties) {
         super(properties);

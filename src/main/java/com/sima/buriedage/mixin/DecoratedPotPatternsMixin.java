@@ -11,11 +11,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * Vanilla maps sherd item to pot pattern through a hardcoded immutable map, and NeoForge exposes no
- * hook for it, so modded sherds would render a blank pot side. This answers for our four sherds and
- * leaves every other item to vanilla.
- */
 @Mixin(DecoratedPotPatterns.class)
 public class DecoratedPotPatternsMixin {
     @Inject(method = "getPatternFromItem", at = @At("HEAD"), cancellable = true)

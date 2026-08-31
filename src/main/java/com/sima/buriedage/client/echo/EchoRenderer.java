@@ -16,15 +16,15 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Draws an echo as a washed-out, half-transparent villager. The body uses the plain villager
- * texture and the clothes are a second pass with the profession texture, both multiplied by the
- * same ghost tint so they fade together.
- */
 public class EchoRenderer extends LivingEntityRenderer<EchoEntity, EchoRenderState, VillagerModel> {
     public EchoRenderer(EntityRendererProvider.Context context) {
         super(context, new VillagerModel(context.bakeLayer(ModelLayers.VILLAGER)), 0.0F);
         this.addLayer(new ProfessionLayer(this, new VillagerModel(context.bakeLayer(ModelLayers.VILLAGER_NO_HAT))));
+    }
+
+    @Override
+    protected boolean shouldShowName(EchoEntity entity, double distanceToCameraSq) {
+        return false;
     }
 
     @Override
@@ -45,7 +45,6 @@ public class EchoRenderer extends LivingEntityRenderer<EchoEntity, EchoRenderSta
         return EchoTuning.BODY_TEXTURE;
     }
 
-    /** Translucent so the alpha in the tint actually blends instead of being clipped. */
     @Override
     protected @Nullable RenderType getRenderType(EchoRenderState state, boolean isBodyVisible,
             boolean forceTransparent, boolean appearGlowing) {
@@ -57,17 +56,12 @@ public class EchoRenderer extends LivingEntityRenderer<EchoEntity, EchoRenderSta
         return ghostTint(state.opacity);
     }
 
-    /** Ghost colour with the fade folded into its alpha. */
     static int ghostTint(float opacity) {
         int base = EchoTuning.TINT_ARGB;
         int alpha = Math.round(ARGB.alpha(base) * Math.clamp(opacity, 0.0F, 1.0F));
         return ARGB.color(alpha, ARGB.red(base), ARGB.green(base), ARGB.blue(base));
     }
 
-    /**
-     * Second pass with the profession clothes. Not vanilla's VillagerProfessionLayer: that one
-     * draws opaque, which would leave solid clothes floating on a transparent body.
-     */
     private static class ProfessionLayer extends RenderLayer<EchoRenderState, VillagerModel> {
         private final VillagerModel clothes;
 

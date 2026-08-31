@@ -8,7 +8,7 @@
         "processors": "buried_age:city_archaeology",
         "projection": "rigid"
       },
-      "weight": 8
+      "weight": 4
     },
     {
       "element": {
@@ -17,7 +17,7 @@
         "processors": "buried_age:city_archaeology",
         "projection": "rigid"
       },
-      "weight": 8
+      "weight": 4
     },
     {
       "element": {
@@ -26,7 +26,7 @@
         "processors": "buried_age:city_archaeology",
         "projection": "rigid"
       },
-      "weight": 6
+      "weight": 7
     },
     {
       "element": {
@@ -35,7 +35,7 @@
         "processors": "buried_age:city_archaeology",
         "projection": "rigid"
       },
-      "weight": 3
+      "weight": 9
     },
     {
       "element": {
@@ -44,16 +44,7 @@
         "processors": "buried_age:city_archaeology",
         "projection": "rigid"
       },
-      "weight": 3
-    },
-    {
-      "element": {
-        "element_type": "minecraft:single_pool_element",
-        "location": "buried_age:city/treasury",
-        "processors": "buried_age:city_archaeology",
-        "projection": "rigid"
-      },
-      "weight": 2
+      "weight": 6
     },
     {
       "element": {
@@ -62,7 +53,16 @@
         "processors": "buried_age:city_archaeology",
         "projection": "rigid"
       },
-      "weight": 2
+      "weight": 5
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "buried_age:city/villa",
+        "processors": "buried_age:city_archaeology",
+        "projection": "rigid"
+      },
+      "weight": 8
     }
   ]
 }

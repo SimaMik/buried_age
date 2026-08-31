@@ -12,7 +12,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
-// This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = TheBuriedAge.MODID, dist = Dist.CLIENT)
 @EventBusSubscriber(modid = TheBuriedAge.MODID, value = Dist.CLIENT)
 public class TheBuriedAgeClient {

@@ -18,11 +18,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-/**
- * Datagen covers registry data only: the enchantment, its tags and the block loot table. Models,
- * blockstates and language files are hand-authored under src/main/resources, because those are the
- * files the artist and the translator replace directly.
- */
 @EventBusSubscriber(modid = TheBuriedAge.MODID)
 public final class ModDataGenerators {
     private static final RegistrySetBuilder DATAPACK_ENTRIES = new RegistrySetBuilder()
@@ -38,11 +33,8 @@ public final class ModDataGenerators {
 
         DatapackBuiltinEntriesProvider datapackEntries = generator.addProvider(true, new DatapackBuiltinEntriesProvider(
                 output, registries, DATAPACK_ENTRIES, Set.of(TheBuriedAge.MODID)));
-        // Tags are written against the patched lookup so the new enchantment resolves.
         generator.addProvider(true, new ModEnchantmentTagsProvider(output, datapackEntries.getRegistryProvider()));
         generator.addProvider(true, new ModItemTagsProvider(output, registries));
-        // Vanilla lookup on purpose: the patched one re-decodes every enchantment, and item tags do
-        // not exist during datagen. Advancements that name our own enchantment are hand-written.
         generator.addProvider(true, new net.minecraft.data.advancements.AdvancementProvider(
                 output, registries, List.of(new ModAdvancementProvider())));
         generator.addProvider(true, new LootTableProvider(

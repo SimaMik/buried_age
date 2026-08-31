@@ -12,7 +12,7 @@
   "item.buried_age.ancient_blueprint.named": "Ancient Blueprint: %s",
   "item.buried_age.ancient_blueprint.tooltip.use": "Place into the Hephaestus Forge",
   "item.buried_age.ancient_blueprint.tooltip.overcap": "Raises the maximum enchantment level by 1",
-  "item.buried_age.ancient_blueprint.tooltip.wrath": "Every fourth melee hit calls down lightning_",
+  "item.buried_age.ancient_blueprint.tooltip.wrath": "Every fourth melee hit calls down lightning",
 
   "item.buried_age.lightning_pottery_sherd": "Lightning Pottery Sherd",
   "item.buried_age.lyre_pottery_sherd": "Lyre Pottery Sherd",

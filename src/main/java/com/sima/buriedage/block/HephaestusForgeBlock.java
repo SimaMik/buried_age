@@ -25,22 +25,18 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jspecify.annotations.Nullable;
 
 public class HephaestusForgeBlock extends Block implements EntityBlock {
     public static final MapCodec<HephaestusForgeBlock> CODEC = simpleCodec(HephaestusForgeBlock::new);
 
-    /**
-     * The model only knows how to show two things: a bare stele, and a stele with a scroll
-     * baked onto it. That's the only axis the artist actually modeled, so that's the only axis
-     * the blockstate needs. Whether the forge is "ready to strike" (all three slots full) is
-     * checked straight off the block entity in animateTick instead of being its own state.
-     */
     public static final BooleanProperty HAS_BLUEPRINT = BooleanProperty.create("has_blueprint");
 
-    /** Placeholder silhouette until the real model's collision shape is measured in-game. */
-    private static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+    private static final VoxelShape SHAPE = Shapes.or(
+            Block.box(0.0, 0.0, 0.0, 16.0, 16.0, 16.0),
+            Block.box(0.0, 16.0, 14.0, 16.0, 32.0, 16.0));
 
     public HephaestusForgeBlock(BlockBehaviour.Properties properties) {
         super(properties);
@@ -69,9 +65,6 @@ public class HephaestusForgeBlock extends Block implements EntityBlock {
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        // Sparks are about "the ritual can fire right now", not about the blueprint being
-        // pinned to the stele — so this reads the block entity directly instead of the
-        // has_blueprint state.
         if (level.getBlockEntity(pos) instanceof HephaestusForgeBlockEntity forge && forge.isCharged()) {
             level.addParticle(ParticleTypes.SMALL_FLAME,
                     pos.getX() + 0.3 + random.nextDouble() * 0.4,
@@ -116,7 +109,6 @@ public class HephaestusForgeBlock extends Block implements EntityBlock {
         return forge.insert(slot, stack) ? InteractionResult.SUCCESS : InteractionResult.PASS;
     }
 
-    /** Which slot this item belongs in, or -1 if the forge has no use for it. */
     private static int slotFor(ItemStack stack) {
         if (stack.getItem() instanceof AncientBlueprintItem) {
             return HephaestusForgeBlockEntity.SLOT_BLUEPRINT;

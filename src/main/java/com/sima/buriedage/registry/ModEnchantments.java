@@ -12,10 +12,6 @@ public final class ModEnchantments {
     public static final ResourceKey<Enchantment> WRATH_OF_ZEUS = ResourceKey.create(
             Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(TheBuriedAge.MODID, "wrath_of_zeus"));
 
-    /**
-     * Which enchantments an Ancient Blueprint can be found for. Data-driven on purpose: the pool is
-     * changed by editing the tag, not the code.
-     */
     public static final TagKey<Enchantment> BLUEPRINT_POOL = TagKey.create(
             Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(TheBuriedAge.MODID, "blueprint_pool"));
 

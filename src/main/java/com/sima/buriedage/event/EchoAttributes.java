@@ -8,7 +8,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 
-/** LivingEntity needs an attribute map even though the echo never uses any of it. */
 @EventBusSubscriber(modid = TheBuriedAge.MODID)
 public final class EchoAttributes {
     private EchoAttributes() {}
