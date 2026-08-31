@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.sima.buriedage.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "DecoratedPotPatternsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

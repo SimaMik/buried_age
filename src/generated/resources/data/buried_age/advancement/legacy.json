@@ -1,0 +1,26 @@
+{
+  "parent": "buried_age:blueprint",
+  "criteria": {
+    "forged": {
+      "trigger": "buried_age:forge_ritual"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.buried_age.legacy.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "buried_age:hephaestus_forge"
+    },
+    "title": {
+      "translate": "advancements.buried_age.legacy.title"
+    }
+  },
+  "requirements": [
+    [
+      "forged"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

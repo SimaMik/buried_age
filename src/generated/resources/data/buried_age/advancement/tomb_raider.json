@@ -1,0 +1,30 @@
+{
+  "parent": "buried_age:root",
+  "criteria": {
+    "opened": {
+      "conditions": {
+        "loot_table": "buried_age:chests/treasury"
+      },
+      "trigger": "minecraft:player_generates_container_loot"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.buried_age.tomb_raider.description"
+    },
+    "frame": "goal",
+    "hidden": true,
+    "icon": {
+      "id": "minecraft:gold_ingot"
+    },
+    "title": {
+      "translate": "advancements.buried_age.tomb_raider.title"
+    }
+  },
+  "requirements": [
+    [
+      "opened"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

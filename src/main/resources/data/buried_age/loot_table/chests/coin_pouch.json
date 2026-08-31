@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "entries": [
+        { "type": "minecraft:item", "name": "minecraft:bundle", "weight": 6,
+          "functions": [ { "function": "minecraft:set_components", "components": {
+            "minecraft:bundle_contents": [ { "id": "minecraft:gold_nugget", "count": 3 } ] } } ] },
+        { "type": "minecraft:item", "name": "minecraft:bundle", "weight": 5,
+          "functions": [ { "function": "minecraft:set_components", "components": {
+            "minecraft:bundle_contents": [ { "id": "minecraft:gold_nugget", "count": 5 } ] } } ] },
+        { "type": "minecraft:item", "name": "minecraft:bundle", "weight": 4,
+          "functions": [ { "function": "minecraft:set_components", "components": {
+            "minecraft:bundle_contents": [ { "id": "minecraft:gold_nugget", "count": 7 } ] } } ] },
+        { "type": "minecraft:item", "name": "minecraft:bundle", "weight": 2,
+          "functions": [ { "function": "minecraft:set_components", "components": {
+            "minecraft:bundle_contents": [ { "id": "minecraft:gold_nugget", "count": 4 }, { "id": "minecraft:gold_ingot", "count": 1 } ] } } ] },
+        { "type": "minecraft:item", "name": "minecraft:bundle", "weight": 1,
+          "functions": [ { "function": "minecraft:set_components", "components": {
+            "minecraft:bundle_contents": [ { "id": "minecraft:gold_nugget", "count": 3 }, { "id": "minecraft:lapis_lazuli", "count": 4 } ] } } ] }
+      ]
+    }
+  ]
+}

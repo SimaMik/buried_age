@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": { "min": 2.0, "max": 4.0, "type": "minecraft:uniform" },
+      "entries": [
+        { "type": "minecraft:tag", "name": "buried_age:pottery_sherds", "expand": true, "weight": 6 },
+        { "type": "minecraft:item", "name": "minecraft:bread", "weight": 8,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 1.0, "max": 3.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:item", "name": "minecraft:iron_nugget", "weight": 8,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 2.0, "max": 6.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:item", "name": "minecraft:wheat", "weight": 8,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 1.0, "max": 4.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:item", "name": "minecraft:clay_ball", "weight": 6,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 1.0, "max": 3.0, "type": "minecraft:uniform" } } ] }
+      ]
+    },
+    {
+      "rolls": 1.0,
+      "entries": [
+        { "type": "minecraft:loot_table", "value": "buried_age:chests/coin_pouch", "weight": 15 },
+        { "type": "minecraft:empty", "weight": 85 }
+      ]
+    }
+  ]
+}

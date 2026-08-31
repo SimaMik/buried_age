@@ -1,0 +1,43 @@
+{
+  "parent": "buried_age:root",
+  "criteria": {
+    "house_medium": {
+      "conditions": {
+        "loot_table": "buried_age:chests/house_medium"
+      },
+      "trigger": "minecraft:player_generates_container_loot"
+    },
+    "house_rich": {
+      "conditions": {
+        "loot_table": "buried_age:chests/house_rich"
+      },
+      "trigger": "minecraft:player_generates_container_loot"
+    },
+    "treasury": {
+      "conditions": {
+        "loot_table": "buried_age:chests/treasury"
+      },
+      "trigger": "minecraft:player_generates_container_loot"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.buried_age.purse.description"
+    },
+    "hidden": true,
+    "icon": {
+      "id": "minecraft:bundle"
+    },
+    "title": {
+      "translate": "advancements.buried_age.purse.title"
+    }
+  },
+  "requirements": [
+    [
+      "treasury",
+      "house_medium",
+      "house_rich"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

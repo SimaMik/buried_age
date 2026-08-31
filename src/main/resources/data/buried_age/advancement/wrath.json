@@ -1,0 +1,29 @@
+{
+  "parent": "buried_age:legacy",
+  "display": {
+    "icon": { "id": "minecraft:lightning__rod" },
+    "title": { "translate": "advancements.buried_age.wrath.title" },
+    "description": { "translate": "advancements.buried_age.wrath.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "has_wrath": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "predicates": {
+              "minecraft:enchantments": [
+                { "enchantments": "buried_age:wrath_of_zeus", "levels": { "min": 1 } }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [ [ "has_wrath" ] ]
+}

@@ -1,0 +1,41 @@
+{
+  "parent": "buried_age:dig",
+  "criteria": {
+    "all_four": {
+      "conditions": {
+        "items": [
+          {
+            "items": "buried_age:lightning_pottery_sherd"
+          },
+          {
+            "items": "buried_age:lyre_pottery_sherd"
+          },
+          {
+            "items": "buried_age:hoplite_pottery_sherd"
+          },
+          {
+            "items": "buried_age:amphora_pottery_sherd"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.buried_age.shards.description"
+    },
+    "icon": {
+      "id": "buried_age:hoplite_pottery_sherd"
+    },
+    "title": {
+      "translate": "advancements.buried_age.shards.title"
+    }
+  },
+  "requirements": [
+    [
+      "all_four"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

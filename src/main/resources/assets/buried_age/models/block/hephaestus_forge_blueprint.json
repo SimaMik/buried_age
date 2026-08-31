@@ -1,0 +1,6 @@
+{
+	"parent": "buried_age:block/hephaestus_forge",
+	"textures": {
+		"parchment": "buried_age:block/hephaestus_forge_blueprint"
+	}
+}

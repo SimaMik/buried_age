@@ -1,0 +1,32 @@
+{
+  "values": [
+    "minecraft:sharpness",
+    "minecraft:smite",
+    "minecraft:bane_of_arthropods",
+    "minecraft:looting",
+    "minecraft:fire_aspect",
+    "minecraft:knockback",
+    "minecraft:sweeping_edge",
+    "minecraft:efficiency",
+    "minecraft:fortune",
+    "minecraft:unbreaking",
+    "minecraft:protection",
+    "minecraft:fire_protection",
+    "minecraft:blast_protection",
+    "minecraft:projectile_protection",
+    "minecraft:thorns",
+    "minecraft:respiration",
+    "minecraft:feather_falling",
+    "minecraft:power",
+    "minecraft:punch",
+    "minecraft:piercing",
+    "minecraft:loyalty",
+    "minecraft:impaling",
+    "minecraft:riptide",
+    "minecraft:density",
+    "minecraft:wind_burst",
+    "minecraft:lunge",
+    "minecraft:luck_of_the_sea",
+    "buried_age:wrath_of_zeus"
+  ]
+}

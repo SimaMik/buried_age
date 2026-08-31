@@ -1,0 +1,35 @@
+{
+  "parent": "buried_age:root",
+  "criteria": {
+    "city_gravel": {
+      "conditions": {
+        "loot_table": "buried_age:archaeology/city_gravel"
+      },
+      "trigger": "minecraft:player_generates_container_loot"
+    },
+    "temple_gravel": {
+      "conditions": {
+        "loot_table": "buried_age:archaeology/temple_gravel"
+      },
+      "trigger": "minecraft:player_generates_container_loot"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.buried_age.dig.description"
+    },
+    "icon": {
+      "id": "minecraft:brush"
+    },
+    "title": {
+      "translate": "advancements.buried_age.dig.title"
+    }
+  },
+  "requirements": [
+    [
+      "city_gravel",
+      "temple_gravel"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

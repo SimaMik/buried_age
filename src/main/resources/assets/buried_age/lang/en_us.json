@@ -1,0 +1,60 @@
+{
+  "itemGroup.buried_age": "The Buried Age",
+
+  "block.buried_age.hephaestus_forge": "Hephaestus Forge",
+  "block.buried_age.cella_marker": "Cella Marker",
+  "block.buried_age.cavity_marker": "Cavity Marker",
+
+  "item.buried_age.hephaestus_hammer": "Hammer of Hephaestus",
+  "item.buried_age.hephaestus_hammer.tooltip": "Strike a charged Hephaestus Forge",
+
+  "item.buried_age.ancient_blueprint": "Ancient Blueprint",
+  "item.buried_age.ancient_blueprint.named": "Ancient Blueprint: %s",
+  "item.buried_age.ancient_blueprint.tooltip.use": "Place into the Hephaestus Forge",
+  "item.buried_age.ancient_blueprint.tooltip.overcap": "Raises the maximum enchantment level by 1",
+  "item.buried_age.ancient_blueprint.tooltip.wrath": "Every fourth melee hit calls down lightning_",
+
+  "item.buried_age.lightning_pottery_sherd": "Lightning Pottery Sherd",
+  "item.buried_age.lyre_pottery_sherd": "Lyre Pottery Sherd",
+  "item.buried_age.hoplite_pottery_sherd": "Hoplite Pottery Sherd",
+  "item.buried_age.amphora_pottery_sherd": "Amphora Pottery Sherd",
+
+  "entity.buried_age.echo": "Echo of the Past",
+  "item.buried_age.echo_spawn_egg": "Echo Spawn Egg",
+
+  "enchantment.buried_age.wrath_of_zeus": "Wrath of Zeus",
+
+  "message.buried_age.forge.not_charged": "The forge is cold: it needs a blueprint, a block of diamond and an item",
+  "message.buried_age.forge.strike": "Strike %s of %s",
+  "message.buried_age.forge.success": "The forge yields: %s",
+  "message.buried_age.forge.reject.blank_blueprint": "This blueprint carries no design",
+  "message.buried_age.forge.reject.needs_max": "The item must already bear %s (it has level %s)",
+  "message.buried_age.forge.reject.already_upgraded": "The forge has already deepened %s on this item",
+  "message.buried_age.forge.reject.not_melee": "Only a melee weapon can carry this",
+  "message.buried_age.forge.reject.already_present": "The item already bears %s",
+
+  "advancements.buried_age.root.title": "Something Lies Here",
+  "advancements.buried_age.root.description": "Stand inside a city the earth swallowed",
+  "advancements.buried_age.dig.title": "The Dig Begins",
+  "advancements.buried_age.dig.description": "Brush loose gravel somewhere under the city",
+  "advancements.buried_age.shards.title": "Shards of an Age",
+  "advancements.buried_age.shards.description": "Hold all four sherds of the buried city at once",
+  "advancements.buried_age.potter.title": "Ancient Potter",
+  "advancements.buried_age.potter.description": "Put a decorated pot back together",
+  "advancements.buried_age.cella.title": "Light of a Fallen Age",
+  "advancements.buried_age.cella.description": "Step into the inner chamber of the temple",
+  "advancements.buried_age.blueprint.title": "Blueprint of the Ancients",
+  "advancements.buried_age.blueprint.description": "Recover a plan nobody has read in an age",
+  "advancements.buried_age.legacy.title": "Hephaestus' Legacy",
+  "advancements.buried_age.legacy.description": "Complete a ritual at the forge",
+  "advancements.buried_age.wrath.title": "Wrath of Zeus",
+  "advancements.buried_age.wrath.description": "Carry a weapon the sky answers to",
+  "advancements.buried_age.beyond.title": "Beyond the Limit",
+  "advancements.buried_age.beyond.description": "Own an enchantment deeper than the world allows",
+  "advancements.buried_age.collection.title": "The Complete Collection",
+  "advancements.buried_age.collection.description": "Recover a blueprint of every kind",
+  "advancements.buried_age.tomb_raider.title": "Tomb Raider",
+  "advancements.buried_age.tomb_raider.description": "Open the treasury the city died protecting",
+  "advancements.buried_age.purse.title": "Dead Man's Purse",
+  "advancements.buried_age.purse.description": "Find a pouch its owner never came back for"
+}

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "has_blueprint=false": { "model": "buried_age:block/hephaestus_forge" },
+    "has_blueprint=true": { "model": "buried_age:block/hephaestus_forge_blueprint" }
+  }
+}

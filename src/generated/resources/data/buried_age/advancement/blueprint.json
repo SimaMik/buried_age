@@ -1,0 +1,32 @@
+{
+  "parent": "buried_age:cella",
+  "criteria": {
+    "has_blueprint": {
+      "conditions": {
+        "items": [
+          {
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.buried_age.blueprint.description"
+    },
+    "icon": {
+      "id": "buried_age:ancient_blueprint"
+    },
+    "title": {
+      "translate": "advancements.buried_age.blueprint.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_blueprint"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

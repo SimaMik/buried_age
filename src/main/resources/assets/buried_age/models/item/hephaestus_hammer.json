@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "buried_age:item/hephaestus_hammer"
+  }
+}

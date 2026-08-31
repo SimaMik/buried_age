@@ -1,0 +1,33 @@
+{
+  "parent": "buried_age:shards",
+  "criteria": {
+    "crafted_pot": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:decorated_pot"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.buried_age.potter.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "id": "minecraft:decorated_pot"
+    },
+    "title": {
+      "translate": "advancements.buried_age.potter.title"
+    }
+  },
+  "requirements": [
+    [
+      "crafted_pot"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

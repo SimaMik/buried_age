@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": { "min": 3.0, "max": 5.0, "type": "minecraft:uniform" },
+      "entries": [
+        { "type": "minecraft:item", "name": "minecraft:lapis_lazuli", "weight": 8,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 2.0, "max": 8.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:item", "name": "minecraft:emerald", "weight": 6,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 1.0, "max": 4.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:item", "name": "minecraft:gold_ingot", "weight": 6,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 1.0, "max": 3.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:item", "name": "minecraft:gold_nugget", "weight": 8,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 3.0, "max": 9.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:tag", "name": "buried_age:pottery_sherds", "expand": true, "weight": 5 }
+      ]
+    },
+    {
+      "rolls": 1.0,
+      "entries": [
+        { "type": "minecraft:loot_table", "value": "buried_age:chests/coin_pouch" }
+      ]
+    },
+    {
+      "rolls": 1.0,
+      "entries": [
+        { "type": "minecraft:item", "name": "buried_age:ancient_blueprint", "weight": 8,
+          "functions": [ { "function": "buried_age:random_blueprint" } ] },
+        { "type": "minecraft:empty", "weight": 92 }
+      ]
+    }
+  ]
+}

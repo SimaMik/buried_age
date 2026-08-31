@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "entries": [
+        { "type": "minecraft:item", "name": "buried_age:ancient_blueprint", "weight": 28,
+          "functions": [ { "function": "minecraft:set_components", "components": { "buried_age:blueprint_enchantment": "buried_age:wrath_of_zeus" } } ] },
+        { "type": "minecraft:empty", "weight": 72 }
+      ]
+    },
+    {
+      "rolls": { "min": 1.0, "max": 2.0, "type": "minecraft:uniform" },
+      "entries": [
+        { "type": "minecraft:item", "name": "buried_age:ancient_blueprint",
+          "functions": [ { "function": "buried_age:random_blueprint" } ] }
+      ]
+    },
+    {
+      "rolls": { "min": 1.0, "max": 2.0, "type": "minecraft:uniform" },
+      "entries": [
+        { "type": "minecraft:loot_table", "value": "buried_age:chests/coin_pouch", "weight": 6 },
+        { "type": "minecraft:item", "name": "minecraft:music_disc_relic", "weight": 3 },
+        { "type": "minecraft:item", "name": "minecraft:lapis_lazuli", "weight": 8,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 4.0, "max": 12.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:item", "name": "minecraft:emerald", "weight": 8,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 2.0, "max": 6.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:item", "name": "minecraft:gold_ingot", "weight": 6,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 1.0, "max": 4.0, "type": "minecraft:uniform" } } ] }
+      ]
+    }
+  ]
+}

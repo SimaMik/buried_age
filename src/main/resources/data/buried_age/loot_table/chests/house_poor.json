@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": { "min": 2.0, "max": 4.0, "type": "minecraft:uniform" },
+      "entries": [
+        { "type": "minecraft:tag", "name": "buried_age:pottery_sherds", "expand": true, "weight": 6 },
+        { "type": "minecraft:item", "name": "minecraft:bread", "weight": 10,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 1.0, "max": 3.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:item", "name": "minecraft:wheat", "weight": 10,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 1.0, "max": 4.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:item", "name": "minecraft:stick", "weight": 10,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 2.0, "max": 5.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:item", "name": "minecraft:clay_ball", "weight": 8,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 1.0, "max": 3.0, "type": "minecraft:uniform" } } ] }
+      ]
+    }
+  ]
+}

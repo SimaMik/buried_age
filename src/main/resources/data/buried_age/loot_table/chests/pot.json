@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": { "min": 1.0, "max": 2.0, "type": "minecraft:uniform" },
+      "entries": [
+        { "type": "minecraft:tag", "name": "buried_age:pottery_sherds", "expand": true, "weight": 8 },
+        { "type": "minecraft:item", "name": "minecraft:clay_ball", "weight": 10,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 1.0, "max": 3.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:item", "name": "minecraft:gold_nugget", "weight": 6,
+          "functions": [ { "function": "minecraft:set_count", "count": { "min": 1.0, "max": 4.0, "type": "minecraft:uniform" } } ] },
+        { "type": "minecraft:item", "name": "buried_age:ancient_blueprint", "weight": 3,
+          "functions": [ { "function": "buried_age:random_blueprint" } ] }
+      ]
+    }
+  ]
+}

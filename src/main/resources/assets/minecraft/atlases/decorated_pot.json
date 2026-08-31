@@ -1,0 +1,8 @@
+{
+  "sources": [
+    { "type": "minecraft:single", "resource": "buried_age:entity/decorated_pot/lightning_pottery_pattern" },
+    { "type": "minecraft:single", "resource": "buried_age:entity/decorated_pot/lyre_pottery_pattern" },
+    { "type": "minecraft:single", "resource": "buried_age:entity/decorated_pot/hoplite_pottery_pattern" },
+    { "type": "minecraft:single", "resource": "buried_age:entity/decorated_pot/amphora_pottery_pattern" }
+  ]
+}

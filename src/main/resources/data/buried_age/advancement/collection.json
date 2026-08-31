@@ -1,0 +1,468 @@
+{
+  "parent": "buried_age:blueprint",
+  "criteria": {
+    "buried_age_wrath_of_zeus": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "buried_age:wrath_of_zeus"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_bane_of_arthropods": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:bane_of_arthropods"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_blast_protection": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:blast_protection"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_density": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:density"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_efficiency": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:efficiency"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_feather_falling": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:feather_falling"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_fire_aspect": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:fire_aspect"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_fire_protection": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:fire_protection"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_fortune": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:fortune"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_impaling": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:impaling"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_knockback": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:knockback"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_looting": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:looting"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_loyalty": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:loyalty"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_luck_of_the_sea": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:luck_of_the_sea"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_lunge": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:lunge"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_piercing": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:piercing"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_power": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:power"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_projectile_protection": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:projectile_protection"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_protection": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:protection"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_punch": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:punch"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_respiration": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:respiration"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_riptide": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:riptide"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_sharpness": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:sharpness"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_smite": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:smite"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_sweeping_edge": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:sweeping_edge"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_thorns": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:thorns"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_unbreaking": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:unbreaking"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "minecraft_wind_burst": {
+      "conditions": {
+        "items": [
+          {
+            "components": {
+              "buried_age:blueprint_enchantment": "minecraft:wind_burst"
+            },
+            "items": "buried_age:ancient_blueprint"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.buried_age.collection.description"
+    },
+    "frame": "challenge",
+    "icon": {
+      "id": "buried_age:ancient_blueprint"
+    },
+    "title": {
+      "translate": "advancements.buried_age.collection.title"
+    }
+  },
+  "requirements": [
+    [
+      "buried_age_wrath_of_zeus"
+    ],
+    [
+      "minecraft_sharpness"
+    ],
+    [
+      "minecraft_smite"
+    ],
+    [
+      "minecraft_bane_of_arthropods"
+    ],
+    [
+      "minecraft_looting"
+    ],
+    [
+      "minecraft_fire_aspect"
+    ],
+    [
+      "minecraft_knockback"
+    ],
+    [
+      "minecraft_sweeping_edge"
+    ],
+    [
+      "minecraft_efficiency"
+    ],
+    [
+      "minecraft_fortune"
+    ],
+    [
+      "minecraft_unbreaking"
+    ],
+    [
+      "minecraft_protection"
+    ],
+    [
+      "minecraft_fire_protection"
+    ],
+    [
+      "minecraft_blast_protection"
+    ],
+    [
+      "minecraft_projectile_protection"
+    ],
+    [
+      "minecraft_thorns"
+    ],
+    [
+      "minecraft_respiration"
+    ],
+    [
+      "minecraft_feather_falling"
+    ],
+    [
+      "minecraft_power"
+    ],
+    [
+      "minecraft_punch"
+    ],
+    [
+      "minecraft_piercing"
+    ],
+    [
+      "minecraft_loyalty"
+    ],
+    [
+      "minecraft_impaling"
+    ],
+    [
+      "minecraft_riptide"
+    ],
+    [
+      "minecraft_density"
+    ],
+    [
+      "minecraft_wind_burst"
+    ],
+    [
+      "minecraft_lunge"
+    ],
+    [
+      "minecraft_luck_of_the_sea"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

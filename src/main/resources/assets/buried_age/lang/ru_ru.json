@@ -1,0 +1,60 @@
+{
+  "itemGroup.buried_age": "The Buried Age",
+
+  "block.buried_age.hephaestus_forge": "Кузня Гефеста",
+  "block.buried_age.cella_marker": "Маркер целлы",
+  "block.buried_age.cavity_marker": "Маркер полости",
+
+  "item.buried_age.hephaestus_hammer": "Молот Гефеста",
+  "item.buried_age.hephaestus_hammer.tooltip": "Ударь по заряженной Кузне Гефеста",
+
+  "item.buried_age.ancient_blueprint": "Древний чертёж",
+  "item.buried_age.ancient_blueprint.named": "Древний чертёж: %s",
+  "item.buried_age.ancient_blueprint.tooltip.use": "Вложи в Кузню Гефеста",
+  "item.buried_age.ancient_blueprint.tooltip.overcap": "+1 к максимальному уровню зачарования",
+  "item.buried_age.ancient_blueprint.tooltip.wrath": "Каждый 4-й удар в ближнем бою призывает молнию",
+
+  "item.buried_age.lightning_pottery_sherd": "Черепок с трезубцем",
+  "item.buried_age.lyre_pottery_sherd": "Черепок с лирой",
+  "item.buried_age.hoplite_pottery_sherd": "Черепок с гоплитом",
+  "item.buried_age.amphora_pottery_sherd": "Черепок с амфорой",
+
+  "entity.buried_age.echo": "Эхо прошлого",
+  "item.buried_age.echo_spawn_egg": "Яйцо призыва: Эхо прошлого",
+
+  "enchantment.buried_age.wrath_of_zeus": "Гнев Зевса",
+
+  "message.buried_age.forge.not_charged": "Кузня холодна: нужны чертёж, алмазный блок и предмет",
+  "message.buried_age.forge.strike": "Удар %s из %s",
+  "message.buried_age.forge.success": "Кузня выковала: %s",
+  "message.buried_age.forge.reject.blank_blueprint": "На этом чертеже нет узора",
+  "message.buried_age.forge.reject.needs_max": "На предмете уже должно быть %s (сейчас уровень %s)",
+  "message.buried_age.forge.reject.already_upgraded": "Кузня уже углубляла %s на этом предмете",
+  "message.buried_age.forge.reject.not_melee": "Это ложится только на оружие ближнего боя",
+  "message.buried_age.forge.reject.already_present": "На предмете уже есть %s",
+
+  "advancements.buried_age.root.title": "Что-то здесь есть",
+  "advancements.buried_age.root.description": "Оказаться внутри города, который проглотила земля",
+  "advancements.buried_age.dig.title": "Раскоп открыт",
+  "advancements.buried_age.dig.description": "Смести кистью рыхлый гравий под городом",
+  "advancements.buried_age.shards.title": "Осколки эпохи",
+  "advancements.buried_age.shards.description": "Собрать все четыре черепка погребённого города",
+  "advancements.buried_age.potter.title": "Гончар древности",
+  "advancements.buried_age.potter.description": "Снова сложить расписной горшок",
+  "advancements.buried_age.cella.title": "Свет угасшей эпохи",
+  "advancements.buried_age.cella.description": "Войти во внутренний зал храма",
+  "advancements.buried_age.blueprint.title": "Чертёж предков",
+  "advancements.buried_age.blueprint.description": "Найти план, который никто не читал целую эпоху",
+  "advancements.buried_age.legacy.title": "Наследие Гефеста",
+  "advancements.buried_age.legacy.description": "Довести ритуал в кузне до конца",
+  "advancements.buried_age.wrath.title": "Гнев Зевса",
+  "advancements.buried_age.wrath.description": "Носить оружие, которому отвечает небо",
+  "advancements.buried_age.beyond.title": "Шестой уровень",
+  "advancements.buried_age.beyond.description": "Заполучить зачарование глубже, чем допускает мир",
+  "advancements.buried_age.collection.title": "Полное собрание",
+  "advancements.buried_age.collection.description": "Найти чертёж каждого вида",
+  "advancements.buried_age.tomb_raider.title": "Расхититель гробниц",
+  "advancements.buried_age.tomb_raider.description": "Вскрыть сокровищницу, которую город защищал до конца",
+  "advancements.buried_age.purse.title": "Кошель мертвеца",
+  "advancements.buried_age.purse.description": "Найти мешочек, за которым хозяин не вернулся"
+}
