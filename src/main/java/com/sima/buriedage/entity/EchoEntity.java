@@ -2,6 +2,7 @@ package com.sima.buriedage.entity;
 
 import com.sima.buriedage.registry.ModEntities;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -13,13 +14,17 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+
+import net.neoforged.neoforge.fluids.FluidType;
 
 public class EchoEntity extends LivingEntity {
     private static final EntityDataAccessor<Integer> DATA_PROFESSION =
@@ -298,7 +303,7 @@ public class EchoEntity extends LivingEntity {
     }
 
     @Override
-    protected void doPush(net.minecraft.world.entity.Entity other) {
+    protected void doPush(Entity other) {
     }
 
     @Override
@@ -322,7 +327,7 @@ public class EchoEntity extends LivingEntity {
     }
 
     @Override
-    public boolean canDrownInFluidType(net.neoforged.neoforge.fluids.FluidType type) {
+    public boolean canDrownInFluidType(FluidType type) {
         return false;
     }
 
@@ -332,7 +337,7 @@ public class EchoEntity extends LivingEntity {
     }
 
     @Override
-    protected void playStepSound(net.minecraft.core.BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
+    protected void playStepSound(BlockPos pos, BlockState state) {
     }
 
     @Override

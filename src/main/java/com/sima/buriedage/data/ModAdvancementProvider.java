@@ -12,6 +12,7 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementType;
+import net.minecraft.advancements.criterion.BlockPredicate;
 import net.minecraft.advancements.criterion.DataComponentMatchers;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.EntityPredicate;
@@ -30,6 +31,7 @@ import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -54,7 +56,7 @@ public class ModAdvancementProvider implements AdvancementSubProvider {
     @Override
     public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> output) {
         HolderLookup.RegistryLookup<Enchantment> enchantments = registries.lookupOrThrow(Registries.ENCHANTMENT);
-        HolderLookup.RegistryLookup<net.minecraft.world.item.Item> items = registries.lookupOrThrow(Registries.ITEM);
+        HolderLookup.RegistryLookup<Item> items = registries.lookupOrThrow(Registries.ITEM);
 
         AdvancementHolder root = AdvancementSubProvider.createPlaceholder(id("root").toString());
 
@@ -90,7 +92,7 @@ public class ModAdvancementProvider implements AdvancementSubProvider {
                         AdvancementType.TASK, true, true, false)
                 .addCriterion("in_cella", PlayerTrigger.TriggerInstance.located(
                         EntityPredicate.Builder.entity().located(LocationPredicate.Builder.location()
-                                .setBlock(net.minecraft.advancements.criterion.BlockPredicate.Builder.block()
+                                .setBlock(BlockPredicate.Builder.block()
                                         .of(registries.lookupOrThrow(Registries.BLOCK),
                                                 com.sima.buriedage.registry.ModBlocks.CELLA_MARKER.get())))))
                 .save(output, id("cella").toString());

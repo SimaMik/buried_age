@@ -11,6 +11,7 @@ import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.advancements.AdvancementProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -35,7 +36,7 @@ public final class ModDataGenerators {
                 output, registries, DATAPACK_ENTRIES, Set.of(TheBuriedAge.MODID)));
         generator.addProvider(true, new ModEnchantmentTagsProvider(output, datapackEntries.getRegistryProvider()));
         generator.addProvider(true, new ModItemTagsProvider(output, registries));
-        generator.addProvider(true, new net.minecraft.data.advancements.AdvancementProvider(
+        generator.addProvider(true, new AdvancementProvider(
                 output, registries, List.of(new ModAdvancementProvider())));
         generator.addProvider(true, new LootTableProvider(
                 output,
