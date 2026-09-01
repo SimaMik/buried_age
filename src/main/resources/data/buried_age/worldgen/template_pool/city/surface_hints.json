@@ -4,38 +4,11 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "buried_age:city/column_top",
-        "processors": { "processors": [] },
+        "location": "buried_age:surface_hint",
+        "processors": "minecraft:empty",
         "projection": "terrain_matching"
       },
-      "weight": 4
-    },
-    {
-      "element": {
-        "element_type": "minecraft:single_pool_element",
-        "location": "buried_age:city/statue_top",
-        "processors": { "processors": [] },
-        "projection": "terrain_matching"
-      },
-      "weight": 3
-    },
-    {
-      "element": {
-        "element_type": "minecraft:single_pool_element",
-        "location": "buried_age:city/pediment_top",
-        "processors": { "processors": [] },
-        "projection": "terrain_matching"
-      },
-      "weight": 3
-    },
-    {
-      "element": {
-        "element_type": "minecraft:single_pool_element",
-        "location": "buried_age:city/sinkhole",
-        "processors": { "processors": [] },
-        "projection": "terrain_matching"
-      },
-      "weight": 2
+      "weight": 1
     }
   ]
 }

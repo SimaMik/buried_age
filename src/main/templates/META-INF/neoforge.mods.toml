@@ -33,7 +33,7 @@ displayURL="https://github.com/SimaMik/buried_age" #optional
 #logoFile="examplemod.png" #optional
 
 # A text field displayed in the mod UI
-#credits="" #optional
+credits="Roy - art, models and textures" #optional
 
 # The authors of the mod, displayed in the mod UI (optional)
 authors="Sima_ES"

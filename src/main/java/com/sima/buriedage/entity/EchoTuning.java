@@ -18,8 +18,8 @@ public final class EchoTuning {
 
     public static final int MAX_ECHOES = 4;
 
-    public static final double SPAWN_RADIUS_MIN = 8.0;
-    public static final double SPAWN_RADIUS_MAX = 15.0;
+    public static final double SPAWN_RADIUS_MIN = 4.0;
+    public static final double SPAWN_RADIUS_MAX = 12.0;
 
     public static final int SPAWN_VERTICAL_SEARCH = 4;
 

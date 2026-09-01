@@ -41,3 +41,8 @@ repo/
 
 ### Исходники арта, не идут в мод
 art_source/
+
+### Рабочие заметки, не публикуются в репозитории
+ROADMAP.md
+README.md
+CURSEFORGE.md

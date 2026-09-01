@@ -20,7 +20,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -180,9 +183,9 @@ public final class EchoSpawner {
     }
 
     private static @Nullable Vec3 findSpot(ServerLevel level, Holder<Structure> city, Vec3 playerPos, RandomSource random) {
-        Vec3 fallback = null;
+        Vec3 unseen = null;
 
-        for (int attempt = 0; attempt < 12; attempt++) {
+        for (int attempt = 0; attempt < 24; attempt++) {
             float angle = random.nextFloat() * Mth.TWO_PI;
             double distance = EchoTuning.randomBetween(random, EchoTuning.SPAWN_RADIUS_MIN, EchoTuning.SPAWN_RADIUS_MAX);
             double x = playerPos.x + Mth.cos(angle) * distance;
@@ -192,7 +195,7 @@ public final class EchoSpawner {
                 for (int sign : VERTICAL_STEPS) {
                     double y = playerPos.y + dy * sign;
                     BlockPos pos = BlockPos.containing(x, y, z);
-                    if (!isInsideCity(level, city, pos)) {
+                    if (!isInsideCity(level, city, pos) || !hasRoom(level, pos)) {
                         if (dy == 0) {
                             break;
                         }
@@ -200,12 +203,13 @@ public final class EchoSpawner {
                         continue;
                     }
 
-                    if (hasRoom(level, pos)) {
-                        return new Vec3(x, y, z);
+                    Vec3 spot = new Vec3(x, y, z);
+                    if (visible(level, playerPos, spot)) {
+                        return spot;
                     }
 
-                    if (fallback == null) {
-                        fallback = new Vec3(x, y, z);
+                    if (unseen == null) {
+                        unseen = spot;
                     }
 
                     if (dy == 0) {
@@ -215,7 +219,14 @@ public final class EchoSpawner {
             }
         }
 
-        return fallback;
+        return unseen;
+    }
+
+    private static boolean visible(ServerLevel level, Vec3 from, Vec3 to) {
+        Vec3 eye = from.add(0.0, 1.6, 0.0);
+        Vec3 chest = to.add(0.0, 1.0, 0.0);
+        return level.clip(new ClipContext(eye, chest, ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.NONE, CollisionContext.empty())).getType() == HitResult.Type.MISS;
     }
 
     private static boolean hasRoom(ServerLevel level, BlockPos pos) {
