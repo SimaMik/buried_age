@@ -7,19 +7,19 @@ public final class EchoTuning {
 
     public static final boolean AUTO_SPAWN_ENABLED = true;
 
-    public static final int COOLDOWN_MIN = 75 * 20;
-    public static final int COOLDOWN_MAX = 120 * 20;
+    public static final int COOLDOWN_MIN = 25 * 20;
+    public static final int COOLDOWN_MAX = 45 * 20;
 
-    public static final int ROLL_INTERVAL = 15 * 20;
+    public static final int ROLL_INTERVAL = 8 * 20;
 
-    public static final float SPAWN_CHANCE = 0.40F;
+    public static final float SPAWN_CHANCE = 0.65F;
 
     public static final float DOUBLE_SPAWN_CHANCE = 0.25F;
 
-    public static final int MAX_ECHOES = 4;
+    public static final int MAX_ECHOES = 5;
 
     public static final double SPAWN_RADIUS_MIN = 4.0;
-    public static final double SPAWN_RADIUS_MAX = 12.0;
+    public static final double SPAWN_RADIUS_MAX = 14.0;
 
     public static final int SPAWN_VERTICAL_SEARCH = 4;
 
@@ -37,13 +37,13 @@ public final class EchoTuning {
     public static final float WHISPER_VOLUME = 0.35F;
     public static final float WHISPER_PITCH = 0.6F;
 
-    public static final int DRIFT_LIFETIME_MIN = 6 * 20;
-    public static final int DRIFT_LIFETIME_MAX = 8 * 20;
+    public static final int DRIFT_LIFETIME_MIN = 12 * 20;
+    public static final int DRIFT_LIFETIME_MAX = 16 * 20;
     public static final float DRIFT_SPEED = 0.022F;
     public static final float DRIFT_BOB = 0.004F;
 
-    public static final int WANDER_LIFETIME_MIN = 12 * 20;
-    public static final int WANDER_LIFETIME_MAX = 18 * 20;
+    public static final int WANDER_LIFETIME_MIN = 18 * 20;
+    public static final int WANDER_LIFETIME_MAX = 26 * 20;
     public static final float WANDER_SPEED = 0.035F;
     public static final float WANDER_BOB = 0.006F;
     public static final float WANDER_PAUSE_BOB = 0.010F;
