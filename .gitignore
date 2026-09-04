@@ -50,3 +50,4 @@ CHECKLIST.md
 
 ### Отладочные классы, в репозиторий и в джарник не идут
 src/main/java/com/sima/buriedage/debug/
+PROBE-*.log
