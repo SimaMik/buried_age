@@ -10,6 +10,7 @@ import com.sima.buriedage.entity.EchoTuning;
 import com.sima.buriedage.registry.ModEntities;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -51,7 +52,7 @@ public final class EchoSpawner {
         }
     }
 
-    private static void tickPlayer(ServerPlayer player) {
+    public static void tickPlayer(ServerPlayer player) {
         UUID id = player.getUUID();
         int remaining = COOLDOWNS.getOrDefault(id, 0) - 1;
         if (remaining > 0) {
@@ -61,43 +62,58 @@ public final class EchoSpawner {
 
         ServerLevel level = player.level();
         RandomSource random = level.getRandom();
-        Holder<Structure> city = level.registryAccess().lookupOrThrow(Registries.STRUCTURE)
-                .get(BURIED_CITY).orElse(null);
+        Structure city = level.registryAccess().lookupOrThrow(Registries.STRUCTURE)
+                .get(BURIED_CITY).map(Holder::value).orElse(null);
         if (city == null) {
+            TheBuriedAge.LOGGER.debug("[echo] buried_city structure is not registered in this level");
             COOLDOWNS.put(id, EchoTuning.ROLL_INTERVAL);
             return;
         }
 
         if (!isInsideCity(level, city, player.blockPosition())) {
+            TheBuriedAge.LOGGER.debug("[echo] {} at {} is outside the buried city", player.getName().getString(),
+                    player.blockPosition());
             COOLDOWNS.put(id, EchoTuning.ROLL_INTERVAL);
             return;
         }
 
         if (random.nextFloat() >= EchoTuning.SPAWN_CHANCE) {
+            TheBuriedAge.LOGGER.debug("[echo] roll failed, chance {}", EchoTuning.SPAWN_CHANCE);
             COOLDOWNS.put(id, EchoTuning.ROLL_INTERVAL);
             return;
         }
 
-        if (countEchoes(level) >= EchoTuning.MAX_ECHOES) {
+        int alive = countEchoes(level);
+        if (alive >= EchoTuning.MAX_ECHOES) {
+            TheBuriedAge.LOGGER.debug("[echo] already {} echoes alive, limit {}", alive, EchoTuning.MAX_ECHOES);
             COOLDOWNS.put(id, EchoTuning.ROLL_INTERVAL);
             return;
         }
 
         boolean spawned = spawnGroup(level, city, player, random);
+        if (!spawned) {
+            TheBuriedAge.LOGGER.debug("[echo] no free spot within {}..{} blocks of {}",
+                    EchoTuning.SPAWN_RADIUS_MIN, EchoTuning.SPAWN_RADIUS_MAX, player.blockPosition());
+        }
+
         COOLDOWNS.put(id, spawned
                 ? EchoTuning.randomBetween(random, EchoTuning.COOLDOWN_MIN, EchoTuning.COOLDOWN_MAX)
                 : EchoTuning.ROLL_INTERVAL);
     }
 
-    private static boolean isInsideCity(ServerLevel level, Holder<Structure> city, BlockPos pos) {
-        return level.structureManager().getStructureWithPieceAt(pos, holder -> holder == city).isValid();
+    private static boolean isInsideCity(ServerLevel level, Structure city, BlockPos pos) {
+        if (level.structureManager().getStructureWithPieceAt(pos, city).isValid()) {
+            return true;
+        }
+
+        return level.structureManager().getStructureAt(pos, city).isValid();
     }
 
     private static int countEchoes(ServerLevel level) {
         return level.getEntities(ModEntities.ECHO.get(), echo -> true).size();
     }
 
-    private static boolean spawnGroup(ServerLevel level, Holder<Structure> city, ServerPlayer player, RandomSource random) {
+    private static boolean spawnGroup(ServerLevel level, Structure city, ServerPlayer player, RandomSource random) {
         int roll = random.nextInt(EchoTuning.WEIGHT_DRIFT + EchoTuning.WEIGHT_WANDER + EchoTuning.WEIGHT_MEETING);
         if (roll < EchoTuning.WEIGHT_MEETING) {
             return spawnMeeting(level, city, player, random);
@@ -116,7 +132,7 @@ public final class EchoSpawner {
         return any;
     }
 
-    private static boolean spawnSingle(ServerLevel level, Holder<Structure> city, ServerPlayer player,
+    private static boolean spawnSingle(ServerLevel level, Structure city, ServerPlayer player,
             RandomSource random, EchoEntity.Mode mode) {
         Vec3 spot = findSpot(level, city, player.position(), random);
         if (spot == null) {
@@ -128,7 +144,7 @@ public final class EchoSpawner {
         return place(level, spot, heading, mode, random) != null;
     }
 
-    private static boolean spawnMeeting(ServerLevel level, Holder<Structure> city, ServerPlayer player, RandomSource random) {
+    private static boolean spawnMeeting(ServerLevel level, Structure city, ServerPlayer player, RandomSource random) {
         if (countEchoes(level) + 2 > EchoTuning.MAX_ECHOES) {
             return false;
         }
@@ -142,8 +158,8 @@ public final class EchoSpawner {
         float angle = random.nextFloat() * Mth.TWO_PI;
         Vec3 axis = new Vec3(Mth.cos(angle), 0.0, Mth.sin(angle));
         Vec3 second = first.add(axis.scale(separation));
-        if (!isInsideCity(level, city, BlockPos.containing(second))) {
-            return false;
+        if (!hasRoom(level, BlockPos.containing(second))) {
+            return spawnSingle(level, city, player, random, EchoEntity.Mode.DRIFT);
         }
 
         Vec3 midpoint = first.add(second).scale(0.5);
@@ -182,10 +198,10 @@ public final class EchoSpawner {
         return echo;
     }
 
-    private static @Nullable Vec3 findSpot(ServerLevel level, Holder<Structure> city, Vec3 playerPos, RandomSource random) {
+    private static @Nullable Vec3 findSpot(ServerLevel level, Structure city, Vec3 playerPos, RandomSource random) {
         Vec3 unseen = null;
 
-        for (int attempt = 0; attempt < 24; attempt++) {
+        for (int attempt = 0; attempt < 32; attempt++) {
             float angle = random.nextFloat() * Mth.TWO_PI;
             double distance = EchoTuning.randomBetween(random, EchoTuning.SPAWN_RADIUS_MIN, EchoTuning.SPAWN_RADIUS_MAX);
             double x = playerPos.x + Mth.cos(angle) * distance;
@@ -203,7 +219,7 @@ public final class EchoSpawner {
                         continue;
                     }
 
-                    Vec3 spot = new Vec3(x, y, z);
+                    Vec3 spot = new Vec3(Mth.floor(x) + 0.5, pos.getY(), Mth.floor(z) + 0.5);
                     if (visible(level, playerPos, spot)) {
                         return spot;
                     }
@@ -230,7 +246,18 @@ public final class EchoSpawner {
     }
 
     private static boolean hasRoom(ServerLevel level, BlockPos pos) {
-        return level.getBlockState(pos).isAir() && level.getBlockState(pos.above()).isAir();
+        if (!level.getBlockState(pos).isAir() || !level.getBlockState(pos.above()).isAir()) {
+            return false;
+        }
+
+        int open = 0;
+        for (Direction side : Direction.Plane.HORIZONTAL) {
+            if (level.getBlockState(pos.relative(side)).isAir()) {
+                open++;
+            }
+        }
+
+        return open >= 2;
     }
 
     @SubscribeEvent
