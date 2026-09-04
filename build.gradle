@@ -29,6 +29,12 @@ sourceSets.main.resources {
     exclude("**/.cache/**")
 }
 
+// The debug harness has to compile so the dev runs can use it, but it must never reach a
+// released jar. Excluding it here keeps runClient/runServer working off the classes dir.
+tasks.named('jar', Jar) {
+    exclude 'com/sima/buriedage/debug/**'
+}
+
 repositories {
     // Add here additional repositories if required by some of the dependencies below.
 }
