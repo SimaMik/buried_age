@@ -158,9 +158,12 @@ public final class EchoSpawner {
         float angle = random.nextFloat() * Mth.TWO_PI;
         Vec3 axis = new Vec3(Mth.cos(angle), 0.0, Mth.sin(angle));
         Vec3 second = first.add(axis.scale(separation));
-        if (!hasRoom(level, BlockPos.containing(second))) {
+        BlockPos secondStanding = standingSpot(level, BlockPos.containing(second));
+        if (secondStanding == null || !hasRoom(level, secondStanding)) {
             return spawnSingle(level, city, player, random, EchoEntity.Mode.DRIFT);
         }
+
+        second = new Vec3(second.x, secondStanding.getY(), second.z);
 
         Vec3 midpoint = first.add(second).scale(0.5);
         EchoEntity a = place(level, first, axis, EchoEntity.Mode.MEETING, random);
@@ -210,8 +213,8 @@ public final class EchoSpawner {
             for (int dy = 0; dy <= EchoTuning.SPAWN_VERTICAL_SEARCH; dy++) {
                 for (int sign : VERTICAL_STEPS) {
                     double y = playerPos.y + dy * sign;
-                    BlockPos pos = BlockPos.containing(x, y, z);
-                    if (!isInsideCity(level, city, pos) || !hasRoom(level, pos)) {
+                    BlockPos standing = standingSpot(level, BlockPos.containing(x, y, z));
+                    if (standing == null || !isInsideCity(level, city, standing) || !hasRoom(level, standing)) {
                         if (dy == 0) {
                             break;
                         }
@@ -219,7 +222,7 @@ public final class EchoSpawner {
                         continue;
                     }
 
-                    Vec3 spot = new Vec3(Mth.floor(x) + 0.5, pos.getY(), Mth.floor(z) + 0.5);
+                    Vec3 spot = new Vec3(Mth.floor(x) + 0.5, standing.getY(), Mth.floor(z) + 0.5);
                     if (visible(level, playerPos, spot)) {
                         return spot;
                     }
@@ -243,6 +246,16 @@ public final class EchoSpawner {
         Vec3 chest = to.add(0.0, 1.0, 0.0);
         return level.clip(new ClipContext(eye, chest, ClipContext.Block.COLLIDER,
                 ClipContext.Fluid.NONE, CollisionContext.empty())).getType() == HitResult.Type.MISS;
+    }
+
+    private static @Nullable BlockPos standingSpot(ServerLevel level, BlockPos pos) {
+        for (int drop = 0; drop <= EchoTuning.SPAWN_FLOOR_SEARCH; drop++) {
+            if (!level.getBlockState(pos.below(drop)).isAir()) {
+                return drop == 0 ? null : pos.below(drop - 1);
+            }
+        }
+
+        return null;
     }
 
     private static boolean hasRoom(ServerLevel level, BlockPos pos) {
