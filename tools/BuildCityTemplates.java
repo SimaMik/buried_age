@@ -168,17 +168,47 @@ public class BuildCityTemplates {
         boolean inside(int x, int y, int z) { return x >= 0 && y >= 0 && z >= 0 && x < sx && y < sy && z < sz; }
 
         int paletteIndex(String blockName) {
-            for (int i = 0; i < palette.size(); i++)
-                if (blockName.equals(palette.get(i)) && get(paletteEntries.get(i), "Properties") == null) return i;
+            return paletteIndex(blockName, Map.of());
+        }
+
+        int paletteIndex(String blockName, Map<String, String> props) {
+            for (int i = 0; i < palette.size(); i++) {
+                if (!blockName.equals(palette.get(i))) continue;
+                Tag existing = get(paletteEntries.get(i), "Properties");
+                if (props.isEmpty() && existing == null) return i;
+                if (!props.isEmpty() && existing instanceof TComp c && c.v.size() == props.size()) {
+                    boolean same = true;
+                    for (Map.Entry<String, String> e : props.entrySet())
+                        if (!e.getValue().equals(str(c.v.get(e.getKey())))) { same = false; break; }
+                    if (same) return i;
+                }
+            }
+
             LinkedHashMap<String, Tag> m = new LinkedHashMap<>();
             m.put("Name", new TStr(blockName));
+            if (!props.isEmpty()) {
+                LinkedHashMap<String, Tag> pm = new LinkedHashMap<>();
+                for (Map.Entry<String, String> e : props.entrySet()) pm.put(e.getKey(), new TStr(e.getValue()));
+                m.put("Properties", new TComp(pm));
+            }
+
             paletteEntries.add(new TComp(m));
             palette.add(blockName);
             return palette.size() - 1;
         }
 
+        Tag blockAt(int x, int y, int z) { return byPos.get(key(x, y, z)); }
+
+        int stateAt(int x, int y, int z) {
+            Tag b = byPos.get(key(x, y, z));
+            return b == null ? -1 : num(get(b, "state"));
+        }
+
         void set(int x, int y, int z, String blockName) {
-            int idx = paletteIndex(blockName);
+            setState(x, y, z, paletteIndex(blockName));
+        }
+
+        void setState(int x, int y, int z, int idx) {
             Tag b = byPos.get(key(x, y, z));
             if (b != null) {
                 ((TComp) b).v.put("state", new TInt(idx));
@@ -206,6 +236,12 @@ public class BuildCityTemplates {
         String orientationOf(Tag jig) {
             return str(get(paletteEntries.get(num(get(jig, "state"))), "Properties", "orientation"));
         }
+
+        void resize(int newSy) {
+            sy = newSy;
+            TList size = (TList) get(root, "size");
+            size.v.set(1, new TInt(newSy));
+        }
     }
 
     static int[] frontOf(String orientation) {
@@ -219,6 +255,137 @@ public class BuildCityTemplates {
             case "down": return new int[] { 0, -1, 0 };
             default: throw new IllegalStateException(orientation);
         }
+    }
+
+    /**
+     * Some buildings were saved with their ground floor one block lower than the streets: their
+     * room already starts at local y=0, so the player steps down out of the road. Lift the whole
+     * template one block, keeping the jigsaw at y=1, and grow a real floor underneath.
+     */
+    static void raiseIfLow(String file) throws IOException {
+        Path p = DIR.resolve(file);
+        Tpl t = new Tpl(load(p));
+
+        int cavity0 = 0;
+        int cavity1 = 0;
+        for (int x = 0; x < t.sx; x++) for (int z = 0; z < t.sz; z++) {
+            if (CAVITY.equals(t.name(x, 0, z))) cavity0++;
+            if (t.inside(x, 1, z) && CAVITY.equals(t.name(x, 1, z))) cavity1++;
+        }
+
+        if (cavity1 == 0 || cavity0 * 100 < cavity1 * 40) {
+            System.out.printf("  %-18s floor already level (cavity y0=%d y1=%d), left alone%n", file, cavity0, cavity1);
+            return;
+        }
+
+        String floor = floorMaterial(t);
+        List<Tag> jigsaws = t.jigsaws();
+        Set<Long> jigsawCells = new HashSet<>();
+        for (Tag j : jigsaws) {
+            int[] jp = pos(j);
+            jigsawCells.add(Tpl.key(jp[0], jp[1], jp[2]));
+        }
+
+        int[][][] oldState = new int[t.sx][t.sy][t.sz];
+        for (int x = 0; x < t.sx; x++) for (int y = 0; y < t.sy; y++) for (int z = 0; z < t.sz; z++)
+            oldState[x][y][z] = t.stateAt(x, y, z);
+
+        List<Tag> keptJigsaws = new ArrayList<>(jigsaws);
+        t.blocks.clear();
+        t.byPos.clear();
+        t.resize(t.sy + 1);
+
+        for (Tag j : keptJigsaws) {
+            int[] jp = pos(j);
+            t.blocks.add(j);
+            t.byPos.put(Tpl.key(jp[0], jp[1], jp[2]), j);
+        }
+
+        int moved = 0;
+        for (int x = 0; x < t.sx; x++) for (int y = t.sy - 2; y >= 0; y--) for (int z = 0; z < t.sz; z++) {
+            int state = oldState[x][y][z];
+            if (state < 0 || jigsawCells.contains(Tpl.key(x, y, z))) continue;
+            if (jigsawCells.contains(Tpl.key(x, y + 1, z))) continue;
+            t.setState(x, y + 1, z, state);
+            moved++;
+        }
+
+        int filled = 0;
+        for (int x = 0; x < t.sx; x++) for (int z = 0; z < t.sz; z++) {
+            int above = t.stateAt(x, 1, z);
+            String aboveName = above < 0 ? null : t.palette.get(above);
+            if (aboveName == null) continue;
+            if (CAVITY.equals(aboveName) || KEEP.contains(aboveName)) {
+                t.set(x, 0, z, floor);
+            } else {
+                t.setState(x, 0, z, above);
+            }
+
+            filled++;
+        }
+
+        save(t.root, p);
+        System.out.printf("  %-18s raised one block (cavity y0=%d y1=%d), %d blocks moved, %d floor cells, floor %s%n",
+                file, cavity0, cavity1, moved, filled, floor.replace("minecraft:", ""));
+    }
+
+    static String floorMaterial(Tpl t) {
+        Map<String, Integer> count = new HashMap<>();
+        for (int x = 0; x < t.sx; x++) for (int z = 0; z < t.sz; z++) {
+            String n = t.name(x, 0, z);
+            if (n == null || CAVITY.equals(n) || KEEP.contains(n)) continue;
+            if (n.equals("minecraft:gravel") || n.equals("minecraft:dirt") || n.equals("minecraft:coarse_dirt")) continue;
+            if (n.contains("_slab") || n.contains("_stairs") || n.contains("_wall") || n.contains("_fence")) continue;
+            count.merge(n, 1, Integer::sum);
+        }
+
+        return count.entrySet().stream().max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey).orElse("minecraft:stone_bricks");
+    }
+
+    /** Move a jigsaw connector to another face of the template, keeping its pool data. */
+    static void moveJigsaw(String file, int fx, int fy, int fz, int tx, int ty, int tz, String orientation)
+            throws IOException {
+        Path p = DIR.resolve(file);
+        Tpl t = new Tpl(load(p));
+        Tag from = t.blockAt(fx, fy, fz);
+        if (from == null || !"minecraft:jigsaw".equals(t.palette.get(num(get(from, "state"))))) {
+            System.out.printf("  %-18s no jigsaw at %d,%d,%d, already moved%n", file, fx, fy, fz);
+            return;
+        }
+
+        Tag nbt = get(from, "nbt");
+        String fill = t.name(fx, fy + 1, fz);
+        if (fill == null || "minecraft:jigsaw".equals(fill)) fill = "minecraft:gravel";
+        t.set(fx, fy, fz, fill);
+
+        int idx = t.paletteIndex("minecraft:jigsaw", Map.of("orientation", orientation));
+        t.setState(tx, ty, tz, idx);
+        ((TComp) t.blockAt(tx, ty, tz)).v.put("nbt", nbt);
+        save(t.root, p);
+        System.out.printf("  %-18s jigsaw %d,%d,%d -> %d,%d,%d facing %s%n",
+                file, fx, fy, fz, tx, ty, tz, orientation);
+    }
+
+    /** Point a block that carries a horizontal facing in a fixed direction inside the template. */
+    static void faceBlock(String file, String blockName, String facing) throws IOException {
+        Path p = DIR.resolve(file);
+        Tpl t = new Tpl(load(p));
+        int touched = 0;
+        for (Tag b : new ArrayList<>(t.blocks)) {
+            int state = num(get(b, "state"));
+            if (!blockName.equals(t.palette.get(state))) continue;
+            Map<String, String> props = new LinkedHashMap<>();
+            Tag existing = get(t.paletteEntries.get(state), "Properties");
+            if (existing instanceof TComp c) c.v.forEach((k, v) -> props.put(k, str(v)));
+            props.put("facing", facing);
+            ((TComp) b).v.put("state", new TInt(t.paletteIndex(blockName, props)));
+            touched++;
+        }
+
+        save(t.root, p);
+        System.out.printf("  %-18s %s facing=%s (%d block%s)%n",
+                file, blockName.replace("buried_age:", ""), facing, touched, touched == 1 ? "" : "s");
     }
 
     static void carve(String file) throws IOException {
@@ -241,25 +408,37 @@ public class BuildCityTemplates {
         int changed = 0;
         StringBuilder trace = new StringBuilder();
 
-        for (int step = 1; step <= 12; step++) {
+        // Without a bound a building whose ground floor is completely collapsed, like the rich
+        // house, would be tunnelled end to end. Two thirds of the way in is enough to be inside.
+        int reach = Math.min(16, (2 * (dx != 0 ? t.sx : t.sz)) / 3);
+        int extra = -1;
+        for (int step = 1; step <= reach; step++) {
             int x = jp[0] + dx * step;
             int y = jp[1];
             int z = jp[2] + dz * step;
             if (!t.inside(x, y, z)) break;
             String at = t.name(x, y, z);
-            boolean room = CAVITY.equals(at) || (t.inside(x, y + 1, z) && CAVITY.equals(t.name(x, y + 1, z)));
+            boolean open = CAVITY.equals(at) && t.inside(x, y + 1, z) && CAVITY.equals(t.name(x, y + 1, z));
+            if (open && extra < 0 && sideOpen(t, x, y, z, dx, dz)) {
+                extra = 0;
+                trace.append(" <-room");
+            }
+
             for (int up = 0; up <= 1; up++) {
                 int yy = y + up;
                 if (!t.inside(x, yy, z)) continue;
                 String cur = t.name(x, yy, z);
                 if (cur != null && KEEP.contains(cur)) continue;
                 if (CAVITY.equals(cur)) continue;
+                String above = t.inside(x, yy + 1, z) ? t.name(x, yy + 1, z) : null;
+                if (above != null && KEEP.contains(above) && !"minecraft:jigsaw".equals(above)) continue;
                 t.set(x, yy, z, CAVITY);
                 changed++;
             }
-            trace.append(' ').append(step).append(':').append(at == null ? "void" : at.replace("minecraft:", ""));
-            if (room) {
-                trace.append(" <-room");
+
+            if (extra < 0) {
+                trace.append(' ').append(step).append(':').append(at == null ? "void" : at.replace("minecraft:", ""));
+            } else if (extra-- == 0) {
                 break;
             }
         }
@@ -267,6 +446,19 @@ public class BuildCityTemplates {
         save(t.root, p);
         System.out.printf("  %-18s jigsaw %d,%d,%d dir %d,%d -> carved %d cells;%s%n",
                 file, jp[0], jp[1], jp[2], dx, dz, changed, trace);
+    }
+
+    /** A corridor we cut ourselves is one cell wide; a real room is open to at least one side. */
+    static boolean sideOpen(Tpl t, int x, int y, int z, int dx, int dz) {
+        int lx = dz;
+        int lz = dx;
+        for (int s : new int[] { 1, -1 }) {
+            int nx = x + lx * s;
+            int nz = z + lz * s;
+            if (t.inside(nx, y, nz) && CAVITY.equals(t.name(nx, y, nz))) return true;
+        }
+
+        return false;
     }
 
     static boolean roomLike(Tpl t, int x, int y, int z, int dx, int dz) {
@@ -310,9 +502,19 @@ public class BuildCityTemplates {
     }
 
     public static void main(String[] args) throws Exception {
-        System.out.println("== carve approaches ==");
         String[] buildings = { "house_poor_a.nbt", "house_poor_b.nbt", "house_medium.nbt", "house_rich.nbt",
                 "workshop.nbt", "theatre.nbt", "villa.nbt", "temple.nbt" };
+
+        System.out.println("== theatre: connector onto the long side, so the rows face the street ==");
+        moveJigsaw("theatre.nbt", 7, 1, 0, 0, 1, 9, "west_up");
+
+        System.out.println("== temple: the forge faces the cella entrance ==");
+        faceBlock("temple.nbt", "buried_age:hephaestus_forge", "west");
+
+        System.out.println("== lift the buildings whose floor sits below street level ==");
+        for (String f : buildings) raiseIfLow(f);
+
+        System.out.println("== carve approaches ==");
         for (String f : buildings) carve(f);
 
         System.out.println("== district streets ==");
@@ -349,6 +551,10 @@ public class BuildCityTemplates {
                     new Spec(2, 1, 0, street, "buried_age:empty", "minecraft:empty", 0));
         }
 
+
+        System.out.println("== villa closing off the rich street ==");
+        makeCopy("villa.nbt", "villa_end_rich.nbt",
+                new Spec(11, 1, 0, "buried_age:street_rich", "buried_age:empty", "minecraft:empty", 0));
 
         System.out.println("== temple road ==");
         makeCopy("street_straight_a.nbt", "temple_road.nbt",

@@ -17,16 +17,7 @@
         "processors": "buried_age:city_archaeology",
         "projection": "rigid"
       },
-      "weight": 3
-    },
-    {
-      "element": {
-        "element_type": "minecraft:single_pool_element",
-        "location": "buried_age:city/villa",
-        "processors": "buried_age:city_archaeology",
-        "projection": "rigid"
-      },
-      "weight": 3
+      "weight": 6
     }
   ]
 }

@@ -4,11 +4,20 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
+        "location": "buried_age:city/villa_end_rich",
+        "processors": "buried_age:city_archaeology",
+        "projection": "rigid"
+      },
+      "weight": 3
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
         "location": "buried_age:city/terminator_rich",
         "processors": { "processors": [] },
         "projection": "rigid"
       },
-      "weight": 1
+      "weight": 7
     }
   ]
 }
