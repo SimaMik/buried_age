@@ -10,4 +10,5 @@ public class HephaestusForgeRenderState extends BlockEntityRenderState {
     public final ItemStackRenderState target = new ItemStackRenderState();
     public final ItemStackRenderState catalyst = new ItemStackRenderState();
     public List<FormattedCharSequence> glyphs = List.of();
+    public float facingAngle;
 }

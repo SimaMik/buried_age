@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.sima.buriedage.block.HephaestusForgeBlock;
 import com.sima.buriedage.block.entity.HephaestusForgeBlockEntity;
 import com.sima.buriedage.item.AncientBlueprintItem;
 
@@ -16,6 +17,7 @@ import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
@@ -79,6 +81,11 @@ public class HephaestusForgeRenderer implements BlockEntityRenderer<HephaestusFo
         }
 
         state.glyphs = this.cachedGlyphs;
+        state.facingAngle = facingAngle(blockEntity.getBlockState().getValue(HephaestusForgeBlock.FACING));
+    }
+
+    private static float facingAngle(Direction facing) {
+        return (facing.toYRot() - Direction.NORTH.toYRot() + 360.0F) % 360.0F;
     }
 
     private static List<FormattedCharSequence> shapeGlyphs(Holder<Enchantment> enchantment) {
@@ -97,6 +104,11 @@ public class HephaestusForgeRenderer implements BlockEntityRenderer<HephaestusFo
     @Override
     public void submit(HephaestusForgeRenderState state, PoseStack poseStack, SubmitNodeCollector collector,
             CameraRenderState camera) {
+        poseStack.pushPose();
+        poseStack.translate(0.5F, 0.0F, 0.5F);
+        poseStack.mulPose(Axis.YP.rotationDegrees(-state.facingAngle));
+        poseStack.translate(-0.5F, 0.0F, -0.5F);
+
         if (!state.target.isEmpty()) {
             poseStack.pushPose();
             poseStack.translate(ANVIL_CENTRE_X, ANVIL_TOP, ANVIL_CENTRE_Z);
@@ -115,6 +127,7 @@ public class HephaestusForgeRenderer implements BlockEntityRenderer<HephaestusFo
         }
 
         this.submitGlyphs(state, poseStack, collector);
+        poseStack.popPose();
     }
 
     private void submitGlyphs(HephaestusForgeRenderState state, PoseStack poseStack, SubmitNodeCollector collector) {
