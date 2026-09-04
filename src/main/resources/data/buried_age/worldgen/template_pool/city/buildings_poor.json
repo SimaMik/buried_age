@@ -1,0 +1,32 @@
+{
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "buried_age:city/house_poor_a",
+        "processors": "buried_age:city_archaeology",
+        "projection": "rigid"
+      },
+      "weight": 5
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "buried_age:city/house_poor_b",
+        "processors": "buried_age:city_archaeology",
+        "projection": "rigid"
+      },
+      "weight": 5
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "buried_age:city/workshop",
+        "processors": "buried_age:city_archaeology",
+        "projection": "rigid"
+      },
+      "weight": 4
+    }
+  ]
+}

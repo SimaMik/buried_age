@@ -4,7 +4,7 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "buried_age:city/terminator",
+        "location": "buried_age:city/terminator_rich",
         "processors": { "processors": [] },
         "projection": "rigid"
       },

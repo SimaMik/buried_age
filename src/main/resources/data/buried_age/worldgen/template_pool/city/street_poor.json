@@ -1,0 +1,32 @@
+{
+  "fallback": "buried_age:city/terminators_poor",
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "buried_age:city/street_poor_a",
+        "processors": "buried_age:city_archaeology",
+        "projection": "rigid"
+      },
+      "weight": 5
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "buried_age:city/street_poor_b",
+        "processors": "buried_age:city_archaeology",
+        "projection": "rigid"
+      },
+      "weight": 5
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "buried_age:city/street_poor_turn",
+        "processors": "buried_age:city_archaeology",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ]
+}

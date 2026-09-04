@@ -47,3 +47,6 @@ ROADMAP.md
 README.md
 CURSEFORGE.md
 CHECKLIST.md
+
+### Отладочные классы, в репозиторий и в джарник не идут
+src/main/java/com/sima/buriedage/debug/

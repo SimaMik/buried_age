@@ -1,41 +1,32 @@
 {
-  "fallback": "buried_age:city/terminators",
+  "fallback": "buried_age:city/terminators_medium",
   "elements": [
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "buried_age:city/street_straight_a",
+        "location": "buried_age:city/street_medium_a",
         "processors": "buried_age:city_archaeology",
         "projection": "rigid"
       },
-      "weight": 4
+      "weight": 5
     },
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "buried_age:city/street_straight_b",
+        "location": "buried_age:city/street_medium_b",
         "processors": "buried_age:city_archaeology",
         "projection": "rigid"
       },
-      "weight": 4
+      "weight": 5
     },
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "buried_age:city/street_turn",
+        "location": "buried_age:city/street_medium_turn",
         "processors": "buried_age:city_archaeology",
         "projection": "rigid"
       },
-      "weight": 3
-    },
-    {
-      "element": {
-        "element_type": "minecraft:single_pool_element",
-        "location": "buried_age:city/street_crossroads",
-        "processors": "buried_age:city_archaeology",
-        "projection": "rigid"
-      },
-      "weight": 2
+      "weight": 1
     }
   ]
 }

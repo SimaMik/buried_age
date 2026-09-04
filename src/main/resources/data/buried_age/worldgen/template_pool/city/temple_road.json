@@ -1,0 +1,14 @@
+{
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "buried_age:city/temple_road",
+        "processors": "buried_age:city_archaeology",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ]
+}
