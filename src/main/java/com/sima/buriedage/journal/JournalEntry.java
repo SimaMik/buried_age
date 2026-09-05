@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.sima.buriedage.item.AncientBlueprintItem;
@@ -25,8 +26,13 @@ import net.minecraft.world.item.enchantment.Enchantment;
  * is a language key derived from its id, so the JSON never carries prose.
  */
 public sealed interface JournalEntry permits JournalEntry.Find, JournalEntry.Building {
-    Codec<JournalEntry> CODEC = Codec.STRING.dispatch("type", JournalEntry::typeName,
-            name -> "find".equals(name) ? Find.MAP_CODEC : Building.MAP_CODEC);
+    Codec<JournalEntry> CODEC = Codec.STRING.partialDispatch("type",
+            entry -> DataResult.success(entry.typeName()),
+            name -> switch (name) {
+                case "find" -> DataResult.success(Find.MAP_CODEC);
+                case "building" -> DataResult.success(Building.MAP_CODEC);
+                default -> DataResult.error(() -> "Unknown journal entry type '" + name + "', expected \"find\" or \"building\"");
+            });
 
     String typeName();
 

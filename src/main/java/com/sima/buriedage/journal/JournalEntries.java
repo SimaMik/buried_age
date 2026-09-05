@@ -1,9 +1,11 @@
 package com.sima.buriedage.journal;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.sima.buriedage.TheBuriedAge;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -25,9 +27,17 @@ public final class JournalEntries extends SimpleJsonResourceReloadListener<Journ
 
     @Override
     protected void apply(Map<Identifier, JournalEntry> entries, ResourceManager manager, ProfilerFiller profiler) {
-        server = new JournalBook(entries);
+        Map<Identifier, JournalEntry> valid = new HashMap<>(entries);
+        valid.entrySet().removeIf(entry -> {
+            if (entry.getValue() instanceof JournalEntry.Find find && !BuiltInRegistries.ITEM.containsKey(find.item())) {
+                TheBuriedAge.LOGGER.warn("Journal entry {} names an unknown item {} and was skipped", entry.getKey(), find.item());
+                return true;
+            }
+            return false;
+        });
+        server = new JournalBook(valid);
         TheBuriedAge.LOGGER.info("Loaded {} journal entries ({} finds, {} city tabs)",
-                entries.size(), server.finds().size(), server.groups().size());
+                valid.size(), server.finds().size(), server.groups().size());
     }
 
     /** The book as the server currently knows it. */

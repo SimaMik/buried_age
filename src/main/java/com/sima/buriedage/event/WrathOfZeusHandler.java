@@ -80,6 +80,7 @@ public final class WrathOfZeusHandler {
         }
 
         victim.igniteForSeconds(BOLT_BURN_SECONDS);
+        victim.invulnerableTime = 0;
         victim.hurtServer(level, level.damageSources().lightningBolt(), BOLT_DAMAGE);
     }
 }

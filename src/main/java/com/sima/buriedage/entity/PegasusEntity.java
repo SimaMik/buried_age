@@ -60,6 +60,10 @@ public class PegasusEntity extends AbstractHorse {
     private static final EntityDataAccessor<Float> DATA_STAMINA = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Byte> DATA_MODE = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Float> DATA_PITCH = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.FLOAT);
+    /** Fewer ticks than this between two flight packets from the rider and the later one is dropped. */
+    private static final int REMOTE_EVENT_INTERVAL = 5;
+    /** Synced stamina is rounded to this many steps and the synced pitch to whole degrees, so the metadata packet is not sent every tick. */
+    private static final float STAMINA_SYNC_STEPS = 200.0F;
 
     /** What the wings are doing, for animation and sound. Written by the server, read everywhere. */
     public enum Mode {
@@ -94,6 +98,7 @@ public class PegasusEntity extends AbstractHorse {
     private int flapTimer;
     private double distanceFlown;
     private boolean everFlewWithRider;
+    private long lastRemoteEventTick = Long.MIN_VALUE / 2;
 
     private float roll;
     private float visualPitch;
@@ -489,9 +494,34 @@ public class PegasusEntity extends AbstractHorse {
         }
     }
 
-    /** Server side. Everything a flight event changes that other players must see or that costs health. */
+    /**
+     * Server side. Everything a flight event changes that other players must see or that costs
+     * health. A packet from a rider is trusted only as far as it can be checked: the sender must
+     * be the one steering, the speed is clamped to what the flight model can reach, the event has
+     * to fit the state the server knows, and takeoffs, crashes and stalls are ignored when they
+     * arrive more often than the model could produce them. Landings skip the rate limit so a
+     * stall right before touchdown can never leave the server thinking the mount is still up.
+     */
     public void applyFlightEvent(PegasusFlightPayload.Kind kind, float speed, @Nullable ServerPlayer rider) {
         if (!(this.level() instanceof ServerLevel level)) {
+            return;
+        }
+        if (rider != null) {
+            if (rider != this.getControllingPassenger()) {
+                return;
+            }
+            long now = level.getGameTime();
+            if (kind != PegasusFlightPayload.Kind.LANDING && now - this.lastRemoteEventTick < REMOTE_EVENT_INTERVAL) {
+                return;
+            }
+            this.lastRemoteEventTick = now;
+        }
+        speed = Float.isFinite(speed) ? Mth.clamp(speed, 0.0F, PegasusTuning.DIVE_MAX_SPEED) : 0.0F;
+        boolean fits = switch (kind) {
+            case TAKEOFF -> !this.flying && this.isSaddled() && !this.isBaby();
+            case LANDING, CRASH, STALL -> this.flying;
+        };
+        if (!fits) {
             return;
         }
         switch (kind) {
@@ -629,7 +659,9 @@ public class PegasusEntity extends AbstractHorse {
         this.visualPitch = this.flightPitch;
         this.airborneTicks++;
 
-        if (this.airborneTicks > PegasusTuning.TAKEOFF_GRACE_TICKS) {
+        if (this.isInWater() || this.isInLava()) {
+            this.land(this.airspeed);
+        } else if (this.airborneTicks > PegasusTuning.TAKEOFF_GRACE_TICKS) {
             if (this.onGround() || this.verticalCollisionBelow) {
                 this.land(this.airspeed);
             } else if (this.horizontalCollision && this.airspeed > PegasusTuning.CRASH_SPEED) {
@@ -688,7 +720,7 @@ public class PegasusEntity extends AbstractHorse {
                     ? (float) (-Math.atan2(observed.y, observed.horizontalDistance()) * Mth.RAD_TO_DEG)
                     : this.visualPitch * 0.9F;
         }
-        this.entityData.set(DATA_PITCH, this.flying ? this.visualPitch : 0.0F);
+        this.entityData.set(DATA_PITCH, this.flying ? (float) Math.round(this.visualPitch) : 0.0F);
 
         if (this.flying) {
             float cost;
@@ -728,7 +760,7 @@ public class PegasusEntity extends AbstractHorse {
                 this.setMode(Mode.GROUND);
             }
         }
-        this.entityData.set(DATA_STAMINA, this.stamina);
+        this.entityData.set(DATA_STAMINA, Math.round(this.stamina * STAMINA_SYNC_STEPS) / STAMINA_SYNC_STEPS);
 
         int interval = switch (this.getMode()) {
             case CLIMB -> PegasusTuning.FLAP_INTERVAL_CLIMB;
@@ -773,7 +805,16 @@ public class PegasusEntity extends AbstractHorse {
         return this.getDeltaMovement().horizontalDistanceSqr() > 0.09;
     }
 
-    // ---------------------------------------------------------------- death
+    // ---------------------------------------------------------------- dismounting and death
+
+    /** Shift in the air is the vanilla dismount; the rider just gets a soft landing out of it. */
+    @Override
+    protected void removePassenger(Entity passenger) {
+        super.removePassenger(passenger);
+        if (!this.level().isClientSide() && this.flying && !this.onGround() && passenger instanceof LivingEntity living && living.isAlive()) {
+            living.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, PegasusTuning.DISMOUNT_SLOW_FALLING_TICKS, 0), this);
+        }
+    }
 
     @Override
     public void die(DamageSource source) {

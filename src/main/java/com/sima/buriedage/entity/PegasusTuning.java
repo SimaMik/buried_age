@@ -165,6 +165,8 @@ public final class PegasusTuning {
 
     /** Slow falling given to the rider when the mount dies in the air. */
     public static final int DEATH_SLOW_FALLING_TICKS = 8 * 20;
+    /** Slow falling given to a rider who dismounts in the air. */
+    public static final int DISMOUNT_SLOW_FALLING_TICKS = 3 * 20;
 
     /** Horizontal blocks in one uninterrupted flight for the Icarus advancement. */
     public static final double ICARUS_DISTANCE = 1000.0;
