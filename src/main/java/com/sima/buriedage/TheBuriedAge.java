@@ -12,6 +12,7 @@ import com.sima.buriedage.registry.ModEntities;
 import com.sima.buriedage.registry.ModItems;
 import com.sima.buriedage.registry.ModLootFunctions;
 import com.sima.buriedage.registry.ModPotPatterns;
+import com.sima.buriedage.registry.ModStructureTypes;
 import com.sima.buriedage.registry.ModTriggers;
 
 import net.neoforged.bus.api.IEventBus;
@@ -33,6 +34,7 @@ public class TheBuriedAge {
         ModPotPatterns.PATTERNS.register(modEventBus);
         ModLootFunctions.LOOT_FUNCTIONS.register(modEventBus);
         ModTriggers.TRIGGERS.register(modEventBus);
+        ModStructureTypes.STRUCTURE_TYPES.register(modEventBus);
         ModAttachments.ATTACHMENTS.register(modEventBus);
     }
 }
