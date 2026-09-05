@@ -8,7 +8,7 @@ public class BuildCityTemplates {
     static final Path DIR = Path.of("src/main/resources/data/buried_age/structure/city");
     static final String CAVITY = "buried_age:cavity_marker";
     static final Set<String> KEEP = Set.of("minecraft:jigsaw", "minecraft:chest", "minecraft:decorated_pot",
-            "buried_age:hephaestus_forge", "buried_age:cella_marker");
+            "buried_age:hephaestus_forge", "buried_age:cella_marker", "buried_age:building_marker");
 
     sealed interface Tag permits TByte, TShort, TInt, TLong, TFloat, TDouble, TBytes, TStr, TList, TComp, TInts, TLongs {}
     record TByte(byte v) implements Tag {}
@@ -287,8 +287,12 @@ public class BuildCityTemplates {
         }
 
         int[][][] oldState = new int[t.sx][t.sy][t.sz];
-        for (int x = 0; x < t.sx; x++) for (int y = 0; y < t.sy; y++) for (int z = 0; z < t.sz; z++)
+        Tag[][][] oldNbt = new Tag[t.sx][t.sy][t.sz];
+        for (int x = 0; x < t.sx; x++) for (int y = 0; y < t.sy; y++) for (int z = 0; z < t.sz; z++) {
             oldState[x][y][z] = t.stateAt(x, y, z);
+            Tag b = t.blockAt(x, y, z);
+            oldNbt[x][y][z] = b == null ? null : get(b, "nbt");
+        }
 
         List<Tag> keptJigsaws = new ArrayList<>(jigsaws);
         t.blocks.clear();
@@ -307,6 +311,7 @@ public class BuildCityTemplates {
             if (state < 0 || jigsawCells.contains(Tpl.key(x, y, z))) continue;
             if (jigsawCells.contains(Tpl.key(x, y + 1, z))) continue;
             t.setState(x, y + 1, z, state);
+            if (oldNbt[x][y][z] != null) ((TComp) t.blockAt(x, y + 1, z)).v.put("nbt", oldNbt[x][y][z]);
             moved++;
         }
 
