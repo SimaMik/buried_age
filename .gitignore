@@ -54,3 +54,8 @@ src/main/java/com/sima/buriedage/debug/
 PROBE-*.log
 CITY-REWORK-REPORT.md
 CODE-COMMENTS-*.md
+
+### Отчёты сессий, не публикуются
+REPORT.md
+AUDIT.md
+TESTPLAN.md
