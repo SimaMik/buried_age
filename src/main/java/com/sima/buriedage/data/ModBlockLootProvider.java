@@ -19,10 +19,11 @@ public class ModBlockLootProvider extends BlockLootSubProvider {
     @Override
     protected void generate() {
         this.dropSelf(ModBlocks.HEPHAESTUS_FORGE.get());
+        this.dropSelf(ModBlocks.PEGASUS_EGG.get());
     }
 
     @Override
     protected Iterable<Block> getKnownBlocks() {
-        return List.of(ModBlocks.HEPHAESTUS_FORGE.get());
+        return List.of(ModBlocks.HEPHAESTUS_FORGE.get(), ModBlocks.PEGASUS_EGG.get());
     }
 }
