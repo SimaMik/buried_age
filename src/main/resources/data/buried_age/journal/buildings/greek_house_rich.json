@@ -1,0 +1,7 @@
+{
+  "type": "building",
+  "id": "greek/house_rich",
+  "icon": "buried_age:textures/gui/journal/greek_house_rich.png",
+  "loot": [ "minecraft:gold_ingot", "minecraft:emerald", "buried_age:amphora_pottery_sherd" ],
+  "order": 5
+}

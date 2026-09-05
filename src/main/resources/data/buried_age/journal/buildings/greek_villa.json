@@ -1,0 +1,7 @@
+{
+  "type": "building",
+  "id": "greek/villa",
+  "icon": "buried_age:textures/gui/journal/greek_villa.png",
+  "loot": [ "minecraft:gold_ingot", "minecraft:diamond", "buried_age:ancient_blueprint" ],
+  "order": 4
+}

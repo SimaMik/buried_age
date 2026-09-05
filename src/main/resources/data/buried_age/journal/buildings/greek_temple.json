@@ -1,0 +1,7 @@
+{
+  "type": "building",
+  "id": "greek/temple",
+  "icon": "buried_age:textures/gui/journal/greek_temple.png",
+  "loot": [ "buried_age:hephaestus_hammer", "buried_age:ancient_blueprint", "buried_age:pegasus_egg", "minecraft:gold_ingot" ],
+  "order": 1
+}

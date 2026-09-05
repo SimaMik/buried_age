@@ -2,6 +2,7 @@ package com.sima.buriedage.registry;
 
 import com.mojang.serialization.Codec;
 import com.sima.buriedage.TheBuriedAge;
+import com.sima.buriedage.journal.BuildingMarker;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
@@ -24,6 +25,12 @@ public final class ModDataComponents {
             COMPONENTS.registerComponentType("wrath_hits", b -> b
                     .persistent(Codec.INT)
                     .networkSynchronized(ByteBufCodecs.VAR_INT));
+
+    /** Building id and radius on a marker item; the block entity takes it over when the block is placed. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BuildingMarker>> BUILDING_MARKER =
+            COMPONENTS.registerComponentType("building_marker", b -> b
+                    .persistent(BuildingMarker.CODEC)
+                    .networkSynchronized(BuildingMarker.STREAM_CODEC));
 
     private ModDataComponents() {}
 }

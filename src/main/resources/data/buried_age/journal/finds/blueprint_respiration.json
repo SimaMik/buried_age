@@ -1,0 +1,6 @@
+{
+  "type": "find",
+  "item": "buried_age:ancient_blueprint",
+  "blueprint": "minecraft:respiration",
+  "order": 45
+}

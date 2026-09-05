@@ -1,0 +1,7 @@
+{
+  "type": "building",
+  "id": "greek/workshop",
+  "icon": "buried_age:textures/gui/journal/greek_workshop.png",
+  "loot": [ "minecraft:iron_ingot", "minecraft:brick", "buried_age:lightning_pottery_sherd" ],
+  "order": 8
+}

@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.sima.buriedage.TheBuriedAge;
 import com.sima.buriedage.item.AncientBlueprintItem;
+import com.sima.buriedage.item.BuildingMarkerItem;
+import com.sima.buriedage.item.FieldJournalItem;
 import com.sima.buriedage.item.HephaestusHammerItem;
 
 import net.minecraft.world.item.BlockItem;
@@ -23,8 +25,14 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> HEPHAESTUS_FORGE =
             ITEMS.registerSimpleBlockItem(ModBlocks.HEPHAESTUS_FORGE);
 
-    public static final DeferredItem<BlockItem> CELLA_MARKER =
-            ITEMS.registerSimpleBlockItem(ModBlocks.CELLA_MARKER);
+    public static final DeferredItem<BuildingMarkerItem> BUILDING_MARKER =
+            ITEMS.registerItem("building_marker", p -> new BuildingMarkerItem(ModBlocks.BUILDING_MARKER.get(), p));
+
+    public static final DeferredItem<FieldJournalItem> FIELD_JOURNAL =
+            ITEMS.registerItem("field_journal", FieldJournalItem::new, p -> p.stacksTo(1));
+
+    public static final DeferredItem<BlockItem> PEGASUS_EGG =
+            ITEMS.registerSimpleBlockItem(ModBlocks.PEGASUS_EGG);
 
     public static final DeferredItem<BlockItem> CAVITY_MARKER =
             ITEMS.registerSimpleBlockItem(ModBlocks.CAVITY_MARKER);

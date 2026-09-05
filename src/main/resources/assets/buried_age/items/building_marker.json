@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "buried_age:item/cella_marker"
+    "model": "buried_age:item/building_marker"
   }
 }

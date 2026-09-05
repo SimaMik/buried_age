@@ -3,21 +3,9 @@
   "criteria": {
     "in_cella": {
       "conditions": {
-        "player": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "location": {
-                "block": {
-                  "blocks": "buried_age:cella_marker"
-                }
-              }
-            }
-          }
-        ]
+        "building": "greek/temple_cella"
       },
-      "trigger": "minecraft:location"
+      "trigger": "buried_age:building_discovered"
     }
   },
   "display": {

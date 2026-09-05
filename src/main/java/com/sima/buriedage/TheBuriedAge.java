@@ -3,6 +3,7 @@ package com.sima.buriedage;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
+import com.sima.buriedage.registry.ModAttachments;
 import com.sima.buriedage.registry.ModBlockEntities;
 import com.sima.buriedage.registry.ModBlocks;
 import com.sima.buriedage.registry.ModCreativeTabs;
@@ -32,5 +33,6 @@ public class TheBuriedAge {
         ModPotPatterns.PATTERNS.register(modEventBus);
         ModLootFunctions.LOOT_FUNCTIONS.register(modEventBus);
         ModTriggers.TRIGGERS.register(modEventBus);
+        ModAttachments.ATTACHMENTS.register(modEventBus);
     }
 }

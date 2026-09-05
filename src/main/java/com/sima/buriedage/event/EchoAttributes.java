@@ -2,6 +2,7 @@ package com.sima.buriedage.event;
 
 import com.sima.buriedage.TheBuriedAge;
 import com.sima.buriedage.entity.EchoEntity;
+import com.sima.buriedage.entity.PegasusEntity;
 import com.sima.buriedage.registry.ModEntities;
 
 import net.neoforged.bus.api.SubscribeEvent;
@@ -15,5 +16,6 @@ public final class EchoAttributes {
     @SubscribeEvent
     public static void onCreateAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.ECHO.get(), EchoEntity.createAttributes().build());
+        event.put(ModEntities.PEGASUS.get(), PegasusEntity.createAttributes().build());
     }
 }

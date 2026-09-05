@@ -1,0 +1,7 @@
+{
+  "type": "building",
+  "id": "greek/house_poor",
+  "icon": "buried_age:textures/gui/journal/greek_house_poor.png",
+  "loot": [ "minecraft:bread", "minecraft:clay_ball", "minecraft:string" ],
+  "order": 7
+}

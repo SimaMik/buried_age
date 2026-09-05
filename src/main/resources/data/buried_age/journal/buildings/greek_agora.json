@@ -1,0 +1,7 @@
+{
+  "type": "building",
+  "id": "greek/agora",
+  "icon": "buried_age:textures/gui/journal/greek_agora.png",
+  "loot": [ "buried_age:lyre_pottery_sherd", "minecraft:emerald", "minecraft:bread" ],
+  "order": 2
+}

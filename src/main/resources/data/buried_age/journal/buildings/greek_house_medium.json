@@ -1,0 +1,7 @@
+{
+  "type": "building",
+  "id": "greek/house_medium",
+  "icon": "buried_age:textures/gui/journal/greek_house_medium.png",
+  "loot": [ "minecraft:iron_ingot", "minecraft:bread", "buried_age:amphora_pottery_sherd" ],
+  "order": 6
+}

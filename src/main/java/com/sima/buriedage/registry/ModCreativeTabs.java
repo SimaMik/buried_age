@@ -22,6 +22,9 @@ public final class ModCreativeTabs {
                     .displayItems((parameters, output) -> {
                         output.accept(ModItems.HEPHAESTUS_FORGE.get());
                         output.accept(ModItems.HEPHAESTUS_HAMMER.get());
+                        output.accept(ModItems.FIELD_JOURNAL.get());
+                        output.accept(ModItems.BUILDING_MARKER.get());
+                        output.accept(ModItems.PEGASUS_EGG.get());
                         ModItems.SHERDS.forEach(sherd -> output.accept(sherd.get()));
                         parameters.holders()
                                 .lookupOrThrow(Registries.ENCHANTMENT)

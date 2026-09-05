@@ -20,7 +20,7 @@ public class MarkerBlock extends Block {
     }
 
     @Override
-    protected MapCodec<MarkerBlock> codec() {
+    protected MapCodec<? extends MarkerBlock> codec() {
         return CODEC;
     }
 

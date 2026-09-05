@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.sima.buriedage.TheBuriedAge;
+import com.sima.buriedage.advancement.BuildingDiscoveredTrigger;
 import com.sima.buriedage.advancement.ForgeRitualTrigger;
 import com.sima.buriedage.registry.ModItems;
 
@@ -12,16 +13,13 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.criterion.BlockPredicate;
 import net.minecraft.advancements.criterion.DataComponentMatchers;
 import net.minecraft.advancements.criterion.EnchantmentPredicate;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.advancements.criterion.InventoryChangeTrigger;
 import net.minecraft.advancements.criterion.ItemPredicate;
-import net.minecraft.advancements.criterion.LocationPredicate;
 import net.minecraft.advancements.criterion.LootTableTrigger;
 import net.minecraft.advancements.criterion.MinMaxBounds;
-import net.minecraft.advancements.criterion.PlayerTrigger;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.predicates.DataComponentPredicates;
@@ -90,11 +88,7 @@ public class ModAdvancementProvider implements AdvancementSubProvider {
                 .parent(dig)
                 .display(Items.CHISELED_STONE_BRICKS, title("cella"), description("cella"), null,
                         AdvancementType.TASK, true, true, false)
-                .addCriterion("in_cella", PlayerTrigger.TriggerInstance.located(
-                        EntityPredicate.Builder.entity().located(LocationPredicate.Builder.location()
-                                .setBlock(BlockPredicate.Builder.block()
-                                        .of(registries.lookupOrThrow(Registries.BLOCK),
-                                                com.sima.buriedage.registry.ModBlocks.CELLA_MARKER.get())))))
+                .addCriterion("in_cella", BuildingDiscoveredTrigger.TriggerInstance.of("greek/temple_cella"))
                 .save(output, id("cella").toString());
 
         AdvancementHolder blueprint = Advancement.Builder.advancement()

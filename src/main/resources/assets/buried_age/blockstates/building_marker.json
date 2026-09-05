@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "buried=false": {
+      "model": "minecraft:block/air"
+    },
+    "buried=true": {
+      "model": "minecraft:block/gravel"
+    }
+  }
+}
