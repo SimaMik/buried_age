@@ -1,0 +1,19 @@
+{
+  "parent": "buried_age:dig",
+  "display": {
+    "icon": { "id": "buried_age:pegasus_egg" },
+    "title": { "translate": "advancements.buried_age.winged.title" },
+    "description": { "translate": "advancements.buried_age.winged.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "hatched": {
+      "trigger": "buried_age:pegasus",
+      "conditions": { "event": "hatched" }
+    }
+  },
+  "requirements": [ [ "hatched" ] ]
+}

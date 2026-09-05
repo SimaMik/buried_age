@@ -4,7 +4,8 @@
   "package": "com.sima.buriedage.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "DecoratedPotPatternsMixin"
+    "DecoratedPotPatternsMixin",
+    "LocalPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

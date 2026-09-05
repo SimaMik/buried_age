@@ -5,6 +5,7 @@
       "rolls": 1.0,
       "bonus_rolls": 0.0,
       "entries": [
+        { "type": "minecraft:item", "name": "buried_age:pegasus_egg", "weight": 8 },
         { "type": "minecraft:item", "name": "buried_age:ancient_blueprint", "weight": 18,
           "functions": [ { "function": "buried_age:random_blueprint" } ] },
         { "type": "minecraft:item", "name": "buried_age:lightning_pottery_sherd", "weight": 22 },

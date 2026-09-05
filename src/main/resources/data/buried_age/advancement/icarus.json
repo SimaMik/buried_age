@@ -1,0 +1,19 @@
+{
+  "parent": "buried_age:first_flight",
+  "display": {
+    "icon": { "id": "minecraft:feather" },
+    "title": { "translate": "advancements.buried_age.icarus.title" },
+    "description": { "translate": "advancements.buried_age.icarus.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "flew_far": {
+      "trigger": "buried_age:pegasus",
+      "conditions": { "event": "icarus" }
+    }
+  },
+  "requirements": [ [ "flew_far" ] ]
+}

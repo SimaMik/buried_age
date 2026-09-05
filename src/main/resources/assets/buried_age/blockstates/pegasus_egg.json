@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "hatch=0": { "model": "buried_age:block/pegasus_egg_0" },
+    "hatch=1": { "model": "buried_age:block/pegasus_egg_1" },
+    "hatch=2": { "model": "buried_age:block/pegasus_egg_2" }
+  }
+}
