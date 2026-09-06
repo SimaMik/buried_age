@@ -59,7 +59,7 @@ public final class JournalEvents {
         }
 
         JournalBook book = JournalEntries.server();
-        if (book.isEmpty() || player.isSpectator()) {
+        if (book.isEmpty() || player.isSpectator() || !JournalService.carriesJournal(player)) {
             return;
         }
 

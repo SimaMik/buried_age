@@ -1,6 +1,7 @@
 package com.sima.buriedage.journal;
 
 import com.sima.buriedage.registry.ModAttachments;
+import com.sima.buriedage.registry.ModItems;
 import com.sima.buriedage.registry.ModTriggers;
 
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -19,11 +20,24 @@ public final class JournalService {
         return player.getData(ModAttachments.JOURNAL);
     }
 
+    /** Nothing is written down without the book: the journal has to be somewhere in the inventory. */
+    public static boolean carriesJournal(ServerPlayer player) {
+        if (player.getOffhandItem().is(ModItems.FIELD_JOURNAL.get())) {
+            return true;
+        }
+        for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
+            if (stack.is(ModItems.FIELD_JOURNAL.get())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** Records a find the first time it is seen; later calls are free. */
     public static void discoverFind(ServerPlayer player, JournalEntry.Find find, ItemStack seen) {
         Identifier key = find.key();
         JournalProgress current = progress(player);
-        if (current.hasFind(key)) {
+        if (current.hasFind(key) || !carriesJournal(player)) {
             return;
         }
 
@@ -39,7 +53,7 @@ public final class JournalService {
         ModTriggers.BUILDING_DISCOVERED.get().trigger(player, building);
 
         JournalProgress current = progress(player);
-        if (current.hasBuilding(building)) {
+        if (current.hasBuilding(building) || !carriesJournal(player)) {
             return;
         }
 
