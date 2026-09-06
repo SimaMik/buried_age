@@ -340,14 +340,10 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         return super.mobInteract(player, hand);
     }
 
+    /** No horse armor: the artist's model has nothing to stretch it over, so the slot stays closed until a pegasus armor of its own exists. */
     @Override
     public boolean canUseSlot(EquipmentSlot slot) {
-        return true;
-    }
-
-    @Override
-    protected void hurtArmor(DamageSource source, float damage) {
-        this.doHurtEquipment(source, damage, EquipmentSlot.BODY);
+        return slot != EquipmentSlot.BODY && super.canUseSlot(slot);
     }
 
     // ---------------------------------------------------------------- sounds
