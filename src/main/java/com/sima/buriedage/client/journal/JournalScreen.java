@@ -17,7 +17,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
-import net.minecraft.client.gui.screens.inventory.PageButton;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -29,7 +28,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -37,42 +38,61 @@ import net.minecraft.world.item.Items;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The archaeological journal, drawn on the vanilla book. One tab for finds, one per city prefix.
- * Pages turn with the book's own buttons, the arrow keys and the mouse wheel.
+ * The archaeological journal as an open book: two vanilla book pages side by side, spines meeting
+ * in the middle, drawn under one scale so the spread fills the window at any GUI scale. One tab for
+ * finds, one per city prefix. Spreads turn with the page arrows, the arrow keys and the mouse wheel.
  */
 public class JournalScreen extends Screen {
-    private static final int IMAGE_WIDTH = 192;
-    private static final int IMAGE_HEIGHT = 192;
-    private static final int TEXT_X = 36;
+    private static final int PAGE = 192;
+    /** The page body occupies x 20..165 of the texture; the right page starts here so the two stitched edges meet. */
+    private static final int RIGHT_PAGE_X = 152;
+    private static final int SPREAD_WIDTH = RIGHT_PAGE_X + PAGE;
+    private static final float PAGE_UV = PAGE / 256.0F;
     private static final int TEXT_WIDTH = 114;
-    private static final int PAGE_INDICATOR_RIGHT = 148;
+    private static final int LEFT_TEXT_X = 42;
+    private static final int RIGHT_TEXT_X = RIGHT_PAGE_X + 36;
     private static final int TABS_Y = 12;
+    private static final int HEADER_Y = 16;
     private static final int CONTENT_Y = 34;
     private static final int TAB_WIDTH = 18;
+    private static final int ARROW_WIDTH = 23;
+    private static final int ARROW_HEIGHT = 13;
+    private static final int ARROW_Y = 157;
+    private static final int BACK_ARROW_X = LEFT_TEXT_X + 4;
+    private static final int FORWARD_ARROW_X = RIGHT_TEXT_X + TEXT_WIDTH - ARROW_WIDTH - 4;
+    private static final int DONE_GAP = 6;
+    private static final int MARGIN = 8;
 
-    private static final int GRID_COLUMNS = 6;
-    private static final int GRID_ROWS = 5;
-    private static final int CELL = 18;
+    private static final int GRID_COLUMNS = 4;
+    private static final int GRID_ROWS = 4;
+    private static final int CELL = 22;
+    private static final int GRID_INSET = (TEXT_WIDTH - GRID_COLUMNS * CELL) / 2;
     private static final int FINDS_PER_PAGE = GRID_COLUMNS * GRID_ROWS;
+    private static final int FINDS_PER_SPREAD = FINDS_PER_PAGE * 2;
 
-    private static final int BUILDINGS_PER_PAGE = 2;
-    private static final int BUILDING_HEIGHT = 62;
+    private static final int BUILDINGS_PER_SPREAD = 2;
     private static final int BUILDING_ICON = 32;
-    private static final int BUILDING_TEXT_WIDTH = TEXT_WIDTH - BUILDING_ICON - 4;
     private static final int LOOT_ICON_STEP = 16;
+    private static final int DESCRIPTION_LINES = 8;
 
     private static final int INK = 0xFF2A2013;
     private static final int FADED_INK = 0xFF6F6353;
     private static final int SILHOUETTE = 0xFF3A3126;
     private static final int LOCKED_ICON_TINT = 0xFF4A4238;
 
+    private static final Identifier FORWARD = Identifier.withDefaultNamespace("widget/page_forward");
+    private static final Identifier FORWARD_HIGHLIGHTED = Identifier.withDefaultNamespace("widget/page_forward_highlighted");
+    private static final Identifier BACKWARD = Identifier.withDefaultNamespace("widget/page_backward");
+    private static final Identifier BACKWARD_HIGHLIGHTED = Identifier.withDefaultNamespace("widget/page_backward_highlighted");
+
     private final JournalBook book;
     private final List<Tab> tabs = new ArrayList<>();
     private final Map<Identifier, Optional<TextureAtlasSprite>> spriteCache = new HashMap<>();
     private int tab;
-    private int page;
-    private PageButton forwardButton;
-    private PageButton backButton;
+    private int spread;
+    private float scale = 1.0F;
+    private int originX;
+    private int originY;
 
     public JournalScreen() {
         super(Component.translatable("journal.buried_age.title"));
@@ -90,15 +110,23 @@ public class JournalScreen extends Screen {
         }
     }
 
+    // ---------------------------------------------------------------- layout
+
+    /** The spread is drawn in book units (384 x 192) under one scale that fits the window. */
+    private void layout() {
+        float byHeight = (this.height - 20 - 2 * MARGIN - DONE_GAP) / (float) PAGE;
+        float byWidth = (this.width - 2 * MARGIN) / (float) SPREAD_WIDTH;
+        this.scale = Mth.clamp(Math.min(byHeight, byWidth), 0.75F, 4.0F);
+        this.originX = Math.round((this.width - SPREAD_WIDTH * this.scale) / 2.0F);
+        this.originY = Math.max(MARGIN, Math.round((this.height - 20 - DONE_GAP - PAGE * this.scale) / 2.0F));
+    }
+
     @Override
     protected void init() {
-        int left = this.backgroundLeft();
-        int top = this.backgroundTop();
+        this.layout();
+        int doneY = Math.min(this.height - 22, Math.round(this.originY + PAGE * this.scale) + DONE_GAP);
         this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose())
-                .pos((this.width - 200) / 2, top + IMAGE_HEIGHT + 2).width(200).build());
-        this.forwardButton = this.addRenderableWidget(new PageButton(left + 116, top + 157, true, button -> this.pageForward(), true));
-        this.backButton = this.addRenderableWidget(new PageButton(left + 43, top + 157, false, button -> this.pageBack(), true));
-        this.updateButtons();
+                .pos((this.width - 200) / 2, doneY).width(200).build());
     }
 
     @Override
@@ -106,13 +134,19 @@ public class JournalScreen extends Screen {
         return false;
     }
 
-    private int backgroundLeft() {
-        return (this.width - IMAGE_WIDTH) / 2;
+    private float bookX(double mouseX) {
+        return (float) ((mouseX - this.originX) / this.scale);
     }
 
-    private int backgroundTop() {
-        return 2;
+    private float bookY(double mouseY) {
+        return (float) ((mouseY - this.originY) / this.scale);
     }
+
+    private static boolean inside(float x, float y, int x0, int y0, int w, int h) {
+        return x >= x0 && x < x0 + w && y >= y0 && y < y0 + h;
+    }
+
+    // ---------------------------------------------------------------- state
 
     private JournalProgress progress() {
         return this.minecraft.player == null ? JournalProgress.EMPTY : this.minecraft.player.getData(ModAttachments.JOURNAL);
@@ -122,37 +156,45 @@ public class JournalScreen extends Screen {
         return this.tabs.get(this.tab);
     }
 
-    private int pageCount() {
+    private int spreadCount() {
         Tab current = this.currentTab();
         int entries = current.isFinds() ? this.book.finds().size() : this.book.buildings(current.group()).size();
-        int perPage = current.isFinds() ? FINDS_PER_PAGE : BUILDINGS_PER_PAGE;
-        return Math.max(1, (entries + perPage - 1) / perPage);
+        int perSpread = current.isFinds() ? FINDS_PER_SPREAD : BUILDINGS_PER_SPREAD;
+        return Math.max(1, (entries + perSpread - 1) / perSpread);
     }
 
     public void selectTab(int index) {
         this.tab = index;
-        this.page = 0;
-        this.updateButtons();
+        this.spread = 0;
+    }
+
+    private boolean canGoForward() {
+        return this.spread < this.spreadCount() - 1;
+    }
+
+    private boolean canGoBack() {
+        return this.spread > 0;
     }
 
     private void pageForward() {
-        if (this.page < this.pageCount() - 1) {
-            this.page++;
+        if (this.canGoForward()) {
+            this.spread++;
+            this.playTurn();
         }
-        this.updateButtons();
     }
 
     private void pageBack() {
-        if (this.page > 0) {
-            this.page--;
+        if (this.canGoBack()) {
+            this.spread--;
+            this.playTurn();
         }
-        this.updateButtons();
     }
 
-    private void updateButtons() {
-        this.forwardButton.visible = this.page < this.pageCount() - 1;
-        this.backButton.visible = this.page > 0;
+    private void playTurn() {
+        this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.0F));
     }
+
+    // ---------------------------------------------------------------- input
 
     @Override
     public boolean keyPressed(KeyEvent event) {
@@ -188,75 +230,104 @@ public class JournalScreen extends Screen {
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (event.button() == 0) {
-            int hit = this.tabAt(event.x(), event.y());
+            float x = this.bookX(event.x());
+            float y = this.bookY(event.y());
+            int hit = this.tabAt(x, y);
             if (hit >= 0) {
                 if (hit != this.tab) {
                     this.selectTab(hit);
                 }
                 return true;
             }
+            if (this.canGoBack() && inside(x, y, BACK_ARROW_X, ARROW_Y, ARROW_WIDTH, ARROW_HEIGHT)) {
+                this.pageBack();
+                return true;
+            }
+            if (this.canGoForward() && inside(x, y, FORWARD_ARROW_X, ARROW_Y, ARROW_WIDTH, ARROW_HEIGHT)) {
+                this.pageForward();
+                return true;
+            }
         }
         return super.mouseClicked(event, doubleClick);
     }
 
-    private int tabAt(double mouseX, double mouseY) {
-        int left = this.backgroundLeft() + TEXT_X;
-        int top = this.backgroundTop() + TABS_Y;
-        if (mouseY < top || mouseY >= top + TAB_WIDTH) {
+    private int tabAt(float x, float y) {
+        if (y < TABS_Y || y >= TABS_Y + TAB_WIDTH || x < LEFT_TEXT_X) {
             return -1;
         }
-        int index = (int) ((mouseX - left) / TAB_WIDTH);
-        return mouseX >= left && index >= 0 && index < this.tabs.size() ? index : -1;
+        int index = (int) ((x - LEFT_TEXT_X) / TAB_WIDTH);
+        return index < this.tabs.size() ? index : -1;
     }
+
+    // ---------------------------------------------------------------- drawing
 
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractBackground(graphics, mouseX, mouseY, a);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, BookViewScreen.BOOK_LOCATION,
-                this.backgroundLeft(), this.backgroundTop(), 0.0F, 0.0F, IMAGE_WIDTH, IMAGE_HEIGHT, 256, 256);
+        this.layout();
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(this.originX, this.originY);
+        graphics.pose().scale(this.scale, this.scale);
+        graphics.blit(BookViewScreen.BOOK_LOCATION, 0, 0, PAGE, PAGE, PAGE_UV, 0.0F, 0.0F, PAGE_UV);
+        graphics.blit(BookViewScreen.BOOK_LOCATION, RIGHT_PAGE_X, 0, SPREAD_WIDTH, PAGE, 0.0F, PAGE_UV, 0.0F, PAGE_UV);
+        graphics.pose().popMatrix();
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractRenderState(graphics, mouseX, mouseY, a);
-        int left = this.backgroundLeft();
-        int top = this.backgroundTop();
+        float x = this.bookX(mouseX);
+        float y = this.bookY(mouseY);
 
-        this.drawTabs(graphics, left, top, mouseX, mouseY);
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(this.originX, this.originY);
+        graphics.pose().scale(this.scale, this.scale);
 
-        Component indicator = Component.translatable("book.pageIndicator", this.page + 1, this.pageCount());
-        graphics.text(this.font, indicator, left + PAGE_INDICATOR_RIGHT - this.font.width(indicator), top + 16, INK, false);
+        this.drawTabs(graphics, x, y, mouseX, mouseY);
+        this.drawArrows(graphics, x, y);
+
+        Component indicator = Component.translatable("book.pageIndicator", this.spread + 1, this.spreadCount());
+        graphics.text(this.font, indicator, RIGHT_TEXT_X + TEXT_WIDTH - this.font.width(indicator), HEADER_Y, INK, false);
 
         JournalProgress progress = this.progress();
         Tab current = this.currentTab();
         if (this.book.isEmpty()) {
-            this.drawWrapped(graphics, Component.translatable("journal.buried_age.empty"), left + TEXT_X, top + CONTENT_Y, TEXT_WIDTH, 8, FADED_INK);
+            this.drawWrapped(graphics, Component.translatable("journal.buried_age.empty"), LEFT_TEXT_X, CONTENT_Y, TEXT_WIDTH, 8, FADED_INK);
         } else if (current.isFinds()) {
-            this.drawFinds(graphics, progress, left, top, mouseX, mouseY);
+            this.drawFinds(graphics, progress, x, y, mouseX, mouseY);
         } else {
-            this.drawBuildings(graphics, progress, current.group(), left, top, mouseX, mouseY);
+            this.drawBuildings(graphics, progress, current.group(), x, y, mouseX, mouseY);
         }
+
+        graphics.pose().popMatrix();
     }
 
-    private void drawTabs(GuiGraphicsExtractor graphics, int left, int top, int mouseX, int mouseY) {
-        int x = left + TEXT_X;
-        int y = top + TABS_Y;
+    private void drawTabs(GuiGraphicsExtractor graphics, float x, float y, int mouseX, int mouseY) {
         for (int i = 0; i < this.tabs.size(); i++) {
-            Tab entry = this.tabs.get(i);
-            int tabX = x + i * TAB_WIDTH;
-            graphics.item(entry.icon(), tabX + 1, y + 1);
+            int tabX = LEFT_TEXT_X + i * TAB_WIDTH;
+            graphics.item(this.tabs.get(i).icon(), tabX + 1, TABS_Y + 1);
             if (i == this.tab) {
-                graphics.fill(tabX + 1, y + TAB_WIDTH, tabX + TAB_WIDTH - 1, y + TAB_WIDTH + 1, INK);
+                graphics.fill(tabX + 1, TABS_Y + TAB_WIDTH, tabX + TAB_WIDTH - 1, TABS_Y + TAB_WIDTH + 1, INK);
             }
         }
-
-        int hovered = this.tabAt(mouseX, mouseY);
+        int hovered = this.tabAt(x, y);
         if (hovered >= 0) {
             graphics.setTooltipForNextFrame(this.font, this.tabs.get(hovered).title(), mouseX, mouseY);
         }
     }
 
-    private void drawFinds(GuiGraphicsExtractor graphics, JournalProgress progress, int left, int top, int mouseX, int mouseY) {
+    private void drawArrows(GuiGraphicsExtractor graphics, float x, float y) {
+        if (this.canGoBack()) {
+            boolean hot = inside(x, y, BACK_ARROW_X, ARROW_Y, ARROW_WIDTH, ARROW_HEIGHT);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, hot ? BACKWARD_HIGHLIGHTED : BACKWARD, BACK_ARROW_X, ARROW_Y, ARROW_WIDTH, ARROW_HEIGHT);
+        }
+        if (this.canGoForward()) {
+            boolean hot = inside(x, y, FORWARD_ARROW_X, ARROW_Y, ARROW_WIDTH, ARROW_HEIGHT);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, hot ? FORWARD_HIGHLIGHTED : FORWARD, FORWARD_ARROW_X, ARROW_Y, ARROW_WIDTH, ARROW_HEIGHT);
+        }
+    }
+
+    private void drawFinds(GuiGraphicsExtractor graphics, JournalProgress progress, float x, float y, int mouseX, int mouseY) {
         List<JournalEntry.Find> finds = this.book.finds();
         int found = 0;
         for (JournalEntry.Find find : finds) {
@@ -264,29 +335,27 @@ public class JournalScreen extends Screen {
                 found++;
             }
         }
+        Component counter = Component.translatable("journal.buried_age.finds.counter", found, finds.size());
+        graphics.text(this.font, counter, LEFT_TEXT_X + TEXT_WIDTH - this.font.width(counter), HEADER_Y, INK, false);
 
-        int x0 = left + TEXT_X;
-        int y0 = top + CONTENT_Y;
-        graphics.text(this.font, Component.translatable("journal.buried_age.finds.counter", found, finds.size()), x0, y0, INK, false);
-
-        int gridY = y0 + 12;
-        int first = this.page * FINDS_PER_PAGE;
         JournalEntry.Find hoveredFind = null;
         boolean hoveredKnown = false;
-        for (int i = first; i < Math.min(finds.size(), first + FINDS_PER_PAGE); i++) {
+        int first = this.spread * FINDS_PER_SPREAD;
+        for (int i = first; i < Math.min(finds.size(), first + FINDS_PER_SPREAD); i++) {
             int slot = i - first;
-            int cellX = x0 + (slot % GRID_COLUMNS) * CELL;
-            int cellY = gridY + (slot / GRID_COLUMNS) * CELL;
+            int pageX = slot < FINDS_PER_PAGE ? LEFT_TEXT_X : RIGHT_TEXT_X;
+            int inPage = slot % FINDS_PER_PAGE;
+            int cellX = pageX + GRID_INSET + (inPage % GRID_COLUMNS) * CELL;
+            int cellY = CONTENT_Y + 4 + (inPage / GRID_COLUMNS) * CELL;
             JournalEntry.Find find = finds.get(i);
             ItemStack icon = find.icon(this.minecraft.level.registryAccess());
             boolean known = progress.hasFind(find.key());
             if (known) {
-                graphics.item(icon, cellX + 1, cellY + 1);
+                graphics.item(icon, cellX + 3, cellY + 3);
             } else {
-                this.drawSilhouette(graphics, find, icon, cellX + 1, cellY + 1);
+                this.drawSilhouette(graphics, find, icon, cellX + 3, cellY + 3);
             }
-
-            if (mouseX >= cellX && mouseX < cellX + CELL && mouseY >= cellY && mouseY < cellY + CELL) {
+            if (inside(x, y, cellX, cellY, CELL, CELL)) {
                 hoveredFind = find;
                 hoveredKnown = known;
             }
@@ -311,47 +380,53 @@ public class JournalScreen extends Screen {
     }
 
     private void drawBuildings(GuiGraphicsExtractor graphics, JournalProgress progress, String group,
-                               int left, int top, int mouseX, int mouseY) {
+                               float x, float y, int mouseX, int mouseY) {
         List<JournalEntry.Building> buildings = this.book.buildings(group);
-        int x0 = left + TEXT_X;
-        int first = this.page * BUILDINGS_PER_PAGE;
-        for (int i = first; i < Math.min(buildings.size(), first + BUILDINGS_PER_PAGE); i++) {
-            int y = top + CONTENT_Y + (i - first) * BUILDING_HEIGHT;
-            JournalEntry.Building building = buildings.get(i);
-            boolean known = progress.hasBuilding(building.id());
+        int first = this.spread * BUILDINGS_PER_SPREAD;
+        for (int i = first; i < Math.min(buildings.size(), first + BUILDINGS_PER_SPREAD); i++) {
+            int pageX = i == first ? LEFT_TEXT_X : RIGHT_TEXT_X;
+            this.drawBuilding(graphics, progress, buildings.get(i), pageX, x, y, mouseX, mouseY);
+        }
+    }
 
-            Component name = known
-                    ? Component.translatable(building.nameKey())
-                    : Component.translatable("journal.buried_age.unknown");
-            graphics.text(this.font, name, x0, y, known ? INK : FADED_INK, false);
+    /** One building fills one page: name, icon with the loot beside it, then the description. */
+    private void drawBuilding(GuiGraphicsExtractor graphics, JournalProgress progress, JournalEntry.Building building,
+                              int pageX, float x, float y, int mouseX, int mouseY) {
+        boolean known = progress.hasBuilding(building.id());
+        Component name = known ? Component.translatable(building.nameKey()) : Component.translatable("journal.buried_age.unknown");
+        graphics.text(this.font, name, pageX, CONTENT_Y, known ? INK : FADED_INK, false);
+        graphics.fill(pageX, CONTENT_Y + 10, pageX + TEXT_WIDTH, CONTENT_Y + 11, known ? INK : FADED_INK);
 
-            int iconY = y + 11;
-            graphics.blit(RenderPipelines.GUI_TEXTURED, building.icon(), x0, iconY, 0.0F, 0.0F,
-                    BUILDING_ICON, BUILDING_ICON, BUILDING_ICON, BUILDING_ICON, known ? -1 : LOCKED_ICON_TINT);
+        int iconY = CONTENT_Y + 15;
+        graphics.blit(RenderPipelines.GUI_TEXTURED, building.icon(), pageX, iconY, 0.0F, 0.0F,
+                BUILDING_ICON, BUILDING_ICON, BUILDING_ICON, BUILDING_ICON, known ? -1 : LOCKED_ICON_TINT);
 
-            Component description = known
-                    ? Component.translatable(building.descriptionKey())
-                    : Component.translatable("journal.buried_age.unknown.building");
-            this.drawWrapped(graphics, description, x0 + BUILDING_ICON + 4, iconY, BUILDING_TEXT_WIDTH, 4, known ? INK : FADED_INK);
-
-            if (known && !building.loot().isEmpty()) {
-                int lootY = iconY + BUILDING_ICON + 2;
-                Component label = Component.translatable("journal.buried_age.loot");
-                graphics.text(this.font, label, x0, lootY + 4, FADED_INK, false);
-                int lootX = x0 + this.font.width(label) + 3;
-                for (Identifier id : building.loot()) {
-                    if (lootX + LOOT_ICON_STEP > x0 + TEXT_WIDTH || !BuiltInRegistries.ITEM.containsKey(id)) {
-                        break;
-                    }
-                    ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.getValue(id));
-                    graphics.item(stack, lootX, lootY);
-                    if (mouseX >= lootX && mouseX < lootX + LOOT_ICON_STEP && mouseY >= lootY && mouseY < lootY + LOOT_ICON_STEP) {
-                        graphics.setTooltipForNextFrame(this.font, stack.getHoverName(), mouseX, mouseY);
-                    }
-                    lootX += LOOT_ICON_STEP;
+        if (known && !building.loot().isEmpty()) {
+            int lootX = pageX + BUILDING_ICON + 6;
+            graphics.text(this.font, Component.translatable("journal.buried_age.loot"), lootX, iconY, FADED_INK, false);
+            int lootY = iconY + 12;
+            int column = 0;
+            for (Identifier id : building.loot()) {
+                if (!BuiltInRegistries.ITEM.containsKey(id)) {
+                    continue;
                 }
+                int slotX = lootX + column * LOOT_ICON_STEP;
+                if (slotX + LOOT_ICON_STEP > pageX + TEXT_WIDTH) {
+                    break;
+                }
+                ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.getValue(id));
+                graphics.item(stack, slotX, lootY);
+                if (inside(x, y, slotX, lootY, LOOT_ICON_STEP, LOOT_ICON_STEP)) {
+                    graphics.setTooltipForNextFrame(this.font, stack.getHoverName(), mouseX, mouseY);
+                }
+                column++;
             }
         }
+
+        Component description = known
+                ? Component.translatable(building.descriptionKey())
+                : Component.translatable("journal.buried_age.unknown.building");
+        this.drawWrapped(graphics, description, pageX, iconY + BUILDING_ICON + 8, TEXT_WIDTH, DESCRIPTION_LINES, known ? INK : FADED_INK);
     }
 
     private void drawWrapped(GuiGraphicsExtractor graphics, Component text, int x, int y, int width, int maxLines, int color) {
