@@ -62,6 +62,8 @@ public final class PegasusTuning {
 
     /** Below this the pegasus refuses to take off. */
     public static final float TAKEOFF_MIN_STAMINA = 0.1F;
+    /** A plain golden apple used from the saddle goes to the pegasus only while the bar is below this; otherwise the rider eats it. */
+    public static final float SADDLE_FEED_STAMINA = 0.1F;
 
     // ================================================================ takeoff
 
