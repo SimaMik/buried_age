@@ -8,17 +8,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 @EventBusSubscriber(modid = TheBuriedAge.MODID, value = Dist.CLIENT)
 public final class PegasusClientEvents {
     private PegasusClientEvents() {}
-
-    @SubscribeEvent
-    static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(PegasusModel.LAYER, PegasusModel::createBodyLayer);
-        event.registerLayerDefinition(PegasusModel.BABY_LAYER, PegasusModel::createBabyLayer);
-    }
 
     /** The view widens with airspeed, the way the elytra does it. */
     @SubscribeEvent

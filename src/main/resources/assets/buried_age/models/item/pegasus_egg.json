@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "minecraft:item/sniffer_egg"
+    "layer0": "buried_age:item/pegasus_egg"
   }
 }

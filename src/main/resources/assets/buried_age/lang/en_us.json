@@ -132,5 +132,7 @@
   "advancements.buried_age.first_flight.title": "First Flight",
   "advancements.buried_age.first_flight.description": "Take off on the back of a pegasus",
   "advancements.buried_age.icarus.title": "Icarus",
-  "advancements.buried_age.icarus.description": "Fly 1000 blocks without touching the ground"
+  "advancements.buried_age.icarus.description": "Fly 1000 blocks without touching the ground",
+
+  "filled_map.buried_age.buried_city": "Buried City Map"
 }

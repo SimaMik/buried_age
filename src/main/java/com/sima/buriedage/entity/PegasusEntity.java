@@ -1,5 +1,12 @@
 package com.sima.buriedage.entity;
 
+import com.geckolib.animatable.GeoEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.RawAnimation;
+import com.geckolib.animation.object.PlayState;
+import com.geckolib.util.GeckoLibUtil;
 import com.sima.buriedage.client.pegasus.PegasusClientBridge;
 import com.sima.buriedage.network.PegasusFlightPayload;
 import com.sima.buriedage.registry.ModEntities;
@@ -24,7 +31,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
@@ -55,7 +61,7 @@ import org.jspecify.annotations.Nullable;
  *
  * <p>All numbers live in {@link PegasusTuning}.
  */
-public class PegasusEntity extends AbstractHorse {
+public class PegasusEntity extends AbstractHorse implements GeoEntity {
     private static final EntityDataAccessor<Boolean> DATA_FLYING = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Float> DATA_STAMINA = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Byte> DATA_MODE = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.BYTE);
@@ -76,13 +82,14 @@ public class PegasusEntity extends AbstractHorse {
         }
     }
 
-    public final AnimationState idleAnimation = new AnimationState();
-    public final AnimationState walkAnimation = new AnimationState();
-    public final AnimationState gallopAnimation = new AnimationState();
-    public final AnimationState takeoffAnimation = new AnimationState();
-    public final AnimationState flyAnimation = new AnimationState();
-    public final AnimationState glideAnimation = new AnimationState();
-    public final AnimationState landAnimation = new AnimationState();
+    private static final RawAnimation WALK = RawAnimation.begin().thenLoop("Walking_Animation");
+    private static final RawAnimation RUN = RawAnimation.begin().thenLoop("Running_Animation");
+    private static final RawAnimation FLY = RawAnimation.begin().thenLoop("Flying_Animation");
+    private static final RawAnimation GLIDE = RawAnimation.begin().thenLoop("Gliding_Animation");
+    /** Walk-animation speed above which the legs are read as a gallop. */
+    private static final float GALLOP_WALK_SPEED = 0.6F;
+
+    private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
     private boolean flying;
     private float airspeed;
@@ -784,14 +791,6 @@ public class PegasusEntity extends AbstractHorse {
 
     private void clientTick() {
         Mode mode = this.getMode();
-        this.idleAnimation.animateWhen(mode == Mode.GROUND && this.walkAnimation.isStarted() == false && !this.isMovingOnGround(), this.tickCount);
-        this.walkAnimation.animateWhen(mode == Mode.GROUND && this.isMovingOnGround() && !this.isGalloping(), this.tickCount);
-        this.gallopAnimation.animateWhen(mode == Mode.GROUND && this.isGalloping(), this.tickCount);
-        this.takeoffAnimation.animateWhen(mode == Mode.TAKEOFF, this.tickCount);
-        this.flyAnimation.animateWhen(mode == Mode.CLIMB || mode == Mode.CRUISE, this.tickCount);
-        this.glideAnimation.animateWhen(mode == Mode.GLIDE || mode == Mode.STALL, this.tickCount);
-        this.landAnimation.animateWhen(mode == Mode.LANDING, this.tickCount);
-
         float rate = Mth.wrapDegrees(this.getYRot() - this.yRotO);
         this.yawRate = this.yawRate + (rate - this.yawRate) * 0.3F;
         boolean airborne = this.isLocalInstanceAuthoritative() ? this.flying : mode.airborne();
@@ -804,12 +803,27 @@ public class PegasusEntity extends AbstractHorse {
         }
     }
 
-    private boolean isMovingOnGround() {
-        return this.getDeltaMovement().horizontalDistanceSqr() > 0.0004;
+    // ---------------------------------------------------------------- animation (GeckoLib)
+
+    /** One controller: the server-synced flight mode picks the wing animation, the walk animation speed picks the gait on the ground. */
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>("pegasus", 5, test -> switch (this.getMode()) {
+            case TAKEOFF, CLIMB, CRUISE -> test.setAndContinue(FLY);
+            case GLIDE, STALL, LANDING -> test.setAndContinue(GLIDE);
+            case GROUND -> {
+                float speed = this.walkAnimation.speed();
+                if (speed > GALLOP_WALK_SPEED) {
+                    yield test.setAndContinue(RUN);
+                }
+                yield test.isMoving() ? test.setAndContinue(WALK) : PlayState.STOP;
+            }
+        }));
     }
 
-    private boolean isGalloping() {
-        return this.getDeltaMovement().horizontalDistanceSqr() > 0.09;
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geoCache;
     }
 
     // ---------------------------------------------------------------- dismounting and death

@@ -11,6 +11,7 @@ import com.sima.buriedage.registry.ModDataComponents;
 import com.sima.buriedage.registry.ModEntities;
 import com.sima.buriedage.registry.ModItems;
 import com.sima.buriedage.registry.ModLootFunctions;
+import com.sima.buriedage.registry.ModMapDecorations;
 import com.sima.buriedage.registry.ModPotPatterns;
 import com.sima.buriedage.registry.ModStructureTypes;
 import com.sima.buriedage.registry.ModTriggers;
@@ -35,6 +36,7 @@ public class TheBuriedAge {
         ModLootFunctions.LOOT_FUNCTIONS.register(modEventBus);
         ModTriggers.TRIGGERS.register(modEventBus);
         ModStructureTypes.STRUCTURE_TYPES.register(modEventBus);
+        ModMapDecorations.MAP_DECORATIONS.register(modEventBus);
         ModAttachments.ATTACHMENTS.register(modEventBus);
     }
 }

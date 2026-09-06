@@ -2,7 +2,7 @@ package com.sima.buriedage;
 
 import com.sima.buriedage.client.HephaestusForgeRenderer;
 import com.sima.buriedage.client.echo.EchoRenderer;
-import com.sima.buriedage.client.pegasus.PegasusRenderer;
+import com.sima.buriedage.client.pegasus.PegasusGeoRenderer;
 import com.sima.buriedage.registry.ModBlockEntities;
 import com.sima.buriedage.registry.ModEntities;
 
@@ -22,6 +22,6 @@ public class TheBuriedAgeClient {
     static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.HEPHAESTUS_FORGE.get(), HephaestusForgeRenderer::new);
         event.registerEntityRenderer(ModEntities.ECHO.get(), EchoRenderer::new);
-        event.registerEntityRenderer(ModEntities.PEGASUS.get(), PegasusRenderer::new);
+        event.registerEntityRenderer(ModEntities.PEGASUS.get(), PegasusGeoRenderer::new);
     }
 }

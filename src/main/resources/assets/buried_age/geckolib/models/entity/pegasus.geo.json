@@ -1,0 +1,898 @@
+{
+   "format_version" : "1.12.0",
+   "minecraft:geometry" : [
+      {
+         "bones" : [
+            {
+               "name" : "Full Pegasus",
+               "pivot" : [
+                  0,
+                  0,
+                  0
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "inflate" : 0.05,
+                     "origin" : [
+                        -5,
+                        11,
+                        -12
+                     ],
+                     "size" : [
+                        10,
+                        10,
+                        23
+                     ],
+                     "uv" : [
+                        0,
+                        19
+                     ]
+                  }
+               ],
+               "name" : "body",
+               "parent" : "Full Pegasus",
+               "pivot" : [
+                  0,
+                  16,
+                  0
+               ]
+            },
+            {
+               "name" : "Full_Head",
+               "parent" : "body",
+               "pivot" : [
+                  0,
+                  18,
+                  -9
+               ],
+               "rotation" : [
+                  22.5,
+                  0,
+                  0
+               ]
+            },
+            {
+               "name" : "Upper_Head",
+               "parent" : "Full_Head",
+               "pivot" : [
+                  0,
+                  27,
+                  -5
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        -3,
+                        27,
+                        -12
+                     ],
+                     "size" : [
+                        6,
+                        6,
+                        7
+                     ],
+                     "uv" : [
+                        44,
+                        66
+                     ]
+                  }
+               ],
+               "name" : "head",
+               "parent" : "Upper_Head",
+               "pivot" : [
+                  0,
+                  21,
+                  -10
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        -2.5,
+                        29,
+                        -17
+                     ],
+                     "size" : [
+                        5,
+                        4,
+                        5
+                     ],
+                     "uv" : [
+                        82,
+                        66
+                     ]
+                  }
+               ],
+               "name" : "mouth",
+               "parent" : "Upper_Head",
+               "pivot" : [
+                  0,
+                  21,
+                  -10
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        -2.5,
+                        27,
+                        -16.25
+                     ],
+                     "size" : [
+                        5,
+                        2,
+                        5
+                     ],
+                     "uv" : [
+                        82,
+                        75
+                     ]
+                  }
+               ],
+               "name" : "Mouth_Opening",
+               "parent" : "mouth",
+               "pivot" : [
+                  0,
+                  29,
+                  -12
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        0.55,
+                        32.5,
+                        -7.51
+                     ],
+                     "size" : [
+                        2,
+                        3,
+                        1
+                     ],
+                     "uv" : [
+                        90,
+                        47
+                     ]
+                  }
+               ],
+               "name" : "left_ear",
+               "parent" : "Upper_Head",
+               "pivot" : [
+                  1.5,
+                  33,
+                  -7
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        -2.55,
+                        32.5,
+                        -7.51
+                     ],
+                     "size" : [
+                        2,
+                        3,
+                        1
+                     ],
+                     "uv" : [
+                        90,
+                        94
+                     ]
+                  }
+               ],
+               "name" : "right_ear",
+               "parent" : "Upper_Head",
+               "pivot" : [
+                  -1.5,
+                  33,
+                  -7
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        -2.55,
+                        15,
+                        -12
+                     ],
+                     "size" : [
+                        5,
+                        12,
+                        7
+                     ],
+                     "uv" : [
+                        66,
+                        33
+                     ]
+                  }
+               ],
+               "name" : "neck",
+               "parent" : "Full_Head",
+               "pivot" : [
+                  0,
+                  21,
+                  -10
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        -1,
+                        14.5,
+                        -6.5
+                     ],
+                     "size" : [
+                        2,
+                        20,
+                        4
+                     ],
+                     "uv" : [
+                        70,
+                        66
+                     ]
+                  }
+               ],
+               "name" : "mane",
+               "parent" : "Full_Head",
+               "pivot" : [
+                  0,
+                  21,
+                  -10.01
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        -1.5,
+                        1,
+                        6
+                     ],
+                     "size" : [
+                        3,
+                        15,
+                        4
+                     ],
+                     "uv" : [
+                        40,
+                        79
+                     ]
+                  },
+                  {
+                     "origin" : [
+                        -1,
+                        15,
+                        6.5
+                     ],
+                     "size" : [
+                        2,
+                        6,
+                        3
+                     ],
+                     "uv" : [
+                        80,
+                        94
+                     ]
+                  }
+               ],
+               "name" : "tail",
+               "parent" : "body",
+               "pivot" : [
+                  0,
+                  21,
+                  9.5
+               ],
+               "rotation" : [
+                  50,
+                  0,
+                  0
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        2,
+                        17,
+                        -7
+                     ],
+                     "size" : [
+                        19,
+                        3,
+                        3
+                     ],
+                     "uv" : [
+                        66,
+                        19
+                     ]
+                  },
+                  {
+                     "origin" : [
+                        5,
+                        18.5,
+                        -5
+                     ],
+                     "size" : [
+                        15,
+                        0,
+                        14
+                     ],
+                     "uv" : [
+                        0,
+                        52
+                     ]
+                  }
+               ],
+               "name" : "Left_Wing",
+               "parent" : "body",
+               "pivot" : [
+                  4,
+                  18.5,
+                  -5.5
+               ],
+               "rotation" : [
+                  0,
+                  0,
+                  -50
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "inflate" : 0.1,
+                     "origin" : [
+                        20,
+                        17.25,
+                        -6.5
+                     ],
+                     "size" : [
+                        20,
+                        2,
+                        2
+                     ],
+                     "uv" : [
+                        66,
+                        29
+                     ]
+                  },
+                  {
+                     "origin" : [
+                        21,
+                        18.25,
+                        -8.5
+                     ],
+                     "size" : [
+                        32,
+                        0,
+                        19
+                     ],
+                     "uv" : {
+                        "down" : {
+                           "uv" : [
+                              0,
+                              120
+                           ],
+                           "uv_size" : [
+                              32,
+                              -19
+                           ]
+                        },
+                        "east" : {
+                           "uv" : [
+                              0,
+                              0
+                           ],
+                           "uv_size" : [
+                              19,
+                              0
+                           ]
+                        },
+                        "north" : {
+                           "uv" : [
+                              0,
+                              0
+                           ],
+                           "uv_size" : [
+                              32,
+                              0
+                           ]
+                        },
+                        "south" : {
+                           "uv" : [
+                              0,
+                              0
+                           ],
+                           "uv_size" : [
+                              32,
+                              0
+                           ]
+                        },
+                        "up" : {
+                           "uv" : [
+                              96,
+                              82
+                           ],
+                           "uv_size" : [
+                              32,
+                              19
+                           ]
+                        },
+                        "west" : {
+                           "uv" : [
+                              0,
+                              0
+                           ],
+                           "uv_size" : [
+                              19,
+                              0
+                           ]
+                        }
+                     }
+                  }
+               ],
+               "name" : "End_Left_wing",
+               "parent" : "Left_Wing",
+               "pivot" : [
+                  20,
+                  18.25,
+                  -6
+               ],
+               "rotation" : [
+                  0,
+                  -20,
+                  90
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        -21,
+                        17,
+                        -7
+                     ],
+                     "size" : [
+                        19,
+                        3,
+                        3
+                     ],
+                     "uv" : [
+                        0,
+                        66
+                     ]
+                  },
+                  {
+                     "origin" : [
+                        -20,
+                        18.5,
+                        -5
+                     ],
+                     "size" : [
+                        15,
+                        0,
+                        14
+                     ],
+                     "uv" : [
+                        58,
+                        52
+                     ]
+                  }
+               ],
+               "name" : "Right_Wing",
+               "parent" : "body",
+               "pivot" : [
+                  -4,
+                  18.5,
+                  -5.5
+               ],
+               "rotation" : [
+                  0,
+                  0,
+                  50
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "inflate" : 0.1,
+                     "origin" : [
+                        -40,
+                        17.25,
+                        -6.5
+                     ],
+                     "size" : [
+                        20,
+                        2,
+                        2
+                     ],
+                     "uv" : [
+                        66,
+                        25
+                     ]
+                  },
+                  {
+                     "origin" : [
+                        -53,
+                        18.25,
+                        -8.5
+                     ],
+                     "size" : [
+                        32,
+                        0,
+                        19
+                     ],
+                     "uv" : [
+                        0,
+                        0
+                     ]
+                  }
+               ],
+               "name" : "End_Right_wing",
+               "parent" : "Right_Wing",
+               "pivot" : [
+                  -20,
+                  18.25,
+                  -5.5
+               ],
+               "rotation" : [
+                  0,
+                  20,
+                  -90
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "mirror" : false,
+                     "origin" : [
+                        2.5,
+                        8,
+                        -11.5
+                     ],
+                     "size" : [
+                        3,
+                        8,
+                        4
+                     ],
+                     "uv" : [
+                        54,
+                        79
+                     ]
+                  }
+               ],
+               "mirror" : true,
+               "name" : "front_left_leg",
+               "parent" : "Full Pegasus",
+               "pivot" : [
+                  4,
+                  15,
+                  -9.5
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        2,
+                        0,
+                        -11.55
+                     ],
+                     "size" : [
+                        4,
+                        3,
+                        4
+                     ],
+                     "uv" : [
+                        90,
+                        40
+                     ]
+                  },
+                  {
+                     "inflate" : -0.001,
+                     "origin" : [
+                        2.5,
+                        2,
+                        -11.05
+                     ],
+                     "size" : [
+                        3,
+                        8,
+                        3
+                     ],
+                     "uv" : [
+                        68,
+                        90
+                     ]
+                  }
+               ],
+               "name" : "Lower_front_left_leg",
+               "parent" : "front_left_leg",
+               "pivot" : [
+                  4,
+                  9,
+                  -9.5
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        -5.5,
+                        8,
+                        -11.5
+                     ],
+                     "size" : [
+                        3,
+                        8,
+                        4
+                     ],
+                     "uv" : [
+                        82,
+                        82
+                     ]
+                  }
+               ],
+               "name" : "front_right_leg",
+               "parent" : "Full Pegasus",
+               "pivot" : [
+                  -4,
+                  15,
+                  -9.5
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        -6,
+                        0,
+                        -11.55
+                     ],
+                     "size" : [
+                        4,
+                        3,
+                        4
+                     ],
+                     "uv" : [
+                        24,
+                        94
+                     ]
+                  },
+                  {
+                     "inflate" : -0.001,
+                     "origin" : [
+                        -5.5,
+                        2,
+                        -11.05
+                     ],
+                     "size" : [
+                        3,
+                        8,
+                        3
+                     ],
+                     "uv" : [
+                        54,
+                        91
+                     ]
+                  }
+               ],
+               "name" : "Lower_front_right_leg",
+               "parent" : "front_right_leg",
+               "pivot" : [
+                  -4,
+                  9,
+                  -9.5
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "mirror" : false,
+                     "origin" : [
+                        1.75,
+                        8,
+                        5.25
+                     ],
+                     "size" : [
+                        4,
+                        9,
+                        6
+                     ],
+                     "uv" : [
+                        0,
+                        72
+                     ]
+                  }
+               ],
+               "mirror" : true,
+               "name" : "back_left_leg",
+               "parent" : "Full Pegasus",
+               "pivot" : [
+                  4,
+                  15,
+                  8
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        2.25,
+                        2,
+                        8
+                     ],
+                     "size" : [
+                        3,
+                        8,
+                        3
+                     ],
+                     "uv" : [
+                        0,
+                        87
+                     ]
+                  },
+                  {
+                     "origin" : [
+                        1.75,
+                        0,
+                        7.5
+                     ],
+                     "size" : [
+                        4,
+                        3,
+                        4
+                     ],
+                     "uv" : [
+                        24,
+                        87
+                     ]
+                  }
+               ],
+               "name" : "Lower_back_left_leg",
+               "parent" : "back_left_leg",
+               "pivot" : [
+                  4,
+                  9,
+                  9.35
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        -5.75,
+                        8,
+                        5.25
+                     ],
+                     "size" : [
+                        4,
+                        9,
+                        6
+                     ],
+                     "uv" : [
+                        20,
+                        72
+                     ]
+                  }
+               ],
+               "name" : "back_right_leg",
+               "parent" : "Full Pegasus",
+               "pivot" : [
+                  -4,
+                  16,
+                  8
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        -5.25,
+                        2,
+                        8
+                     ],
+                     "size" : [
+                        3,
+                        8,
+                        3
+                     ],
+                     "uv" : [
+                        12,
+                        87
+                     ]
+                  },
+                  {
+                     "origin" : [
+                        -5.75,
+                        0,
+                        7.5
+                     ],
+                     "size" : [
+                        4,
+                        3,
+                        4
+                     ],
+                     "uv" : [
+                        90,
+                        33
+                     ]
+                  }
+               ],
+               "name" : "Lower_back_right_leg",
+               "parent" : "back_right_leg",
+               "pivot" : [
+                  -4,
+                  9,
+                  9.35
+               ]
+            },
+            {
+               "cubes" : [
+                  {
+                     "origin" : [
+                        -5,
+                        21,
+                        -4
+                     ],
+                     "size" : [
+                        10,
+                        3,
+                        8
+                     ],
+                     "uv" : [
+                        83,
+                        0
+                     ]
+                  },
+                  {
+                     "origin" : [
+                        -1,
+                        24,
+                        -3
+                     ],
+                     "size" : [
+                        2,
+                        2,
+                        2
+                     ],
+                     "uv" : [
+                        30,
+                        102
+                     ]
+                  }
+               ],
+               "name" : "saddle",
+               "parent" : "body",
+               "pivot" : [
+                  0,
+                  21,
+                  0
+               ]
+            }
+         ],
+         "description" : {
+            "identifier" : "geometry.pegasus",
+            "texture_height" : 128,
+            "texture_width" : 128,
+            "visible_bounds_height" : 3.5,
+            "visible_bounds_offset" : [
+               0,
+               1.25,
+               0
+            ],
+            "visible_bounds_width" : 7
+         }
+      }
+   ]
+}

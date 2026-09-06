@@ -1,3 +1,11 @@
 {
-  "parent": "minecraft:block/sniffer_egg_very_cracked"
+  "parent": "minecraft:block/sniffer_egg",
+  "textures": {
+    "bottom": "buried_age:block/pegasus_egg_2_bottom",
+    "east": "buried_age:block/pegasus_egg_2_east",
+    "north": "buried_age:block/pegasus_egg_2_north",
+    "south": "buried_age:block/pegasus_egg_2_south",
+    "top": "buried_age:block/pegasus_egg_2_top",
+    "west": "buried_age:block/pegasus_egg_2_west"
+  }
 }
