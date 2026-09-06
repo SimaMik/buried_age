@@ -17,8 +17,8 @@ import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
 
 /**
- * The artist's GeckoLib model. The saddle is a bone of the model, shown by scaling it back from
- * zero when a saddle is on; the foal is the same model at half size; in flight the whole body
+ * The artist's GeckoLib model. The saddle and bridle are bones of the model wearing the vanilla
+ * saddle pixels, shown by scaling them back from zero when a saddle is on; the foal is the same model at half size; in flight the whole body
  * pitches with the flight path and banks into turns on top of GeckoLib's own rotations.
  */
 public class PegasusGeoRenderer extends GeoEntityRenderer<PegasusEntity, LivingEntityRenderState> {
@@ -26,6 +26,7 @@ public class PegasusGeoRenderer extends GeoEntityRenderer<PegasusEntity, LivingE
     private static final DataTicket<Float> PITCH = DataTicket.create("buried_age_pitch", Float.class);
     private static final DataTicket<Boolean> SADDLED = DataTicket.create("buried_age_saddled", Boolean.class);
     private static final String SADDLE_BONE = "saddle";
+    private static final String BRIDLE_BONE = "bridle";
     private static final float FOAL_SCALE = 0.5F;
     /** Height of the body centre in blocks: the point the flight pitch and bank rotate around. */
     private static final float TILT_PIVOT = 1.2F;
@@ -70,6 +71,7 @@ public class PegasusGeoRenderer extends GeoEntityRenderer<PegasusEntity, LivingE
     public void adjustModelBonesForRender(RenderPassInfo<LivingEntityRenderState> renderPassInfo, BoneSnapshots snapshots) {
         if (!renderPassInfo.renderState().getOrDefaultGeckolibData(SADDLED, false)) {
             snapshots.get(SADDLE_BONE).ifPresent(saddle -> saddle.setScale(0.0F, 0.0F, 0.0F));
+            snapshots.get(BRIDLE_BONE).ifPresent(bridle -> bridle.setScale(0.0F, 0.0F, 0.0F));
         }
     }
 }
