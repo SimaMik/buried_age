@@ -313,6 +313,11 @@ public class PegasusEntity extends AbstractHorse {
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         boolean openInventory = !this.isBaby() && this.isTamed() && player.isSecondaryUseActive();
+        ItemStack held = player.getItemInHand(hand);
+        if (!openInventory && !held.isEmpty() && this.isFood(held)
+                && (held.is(Items.GOLDEN_APPLE) || held.is(Items.ENCHANTED_GOLDEN_APPLE)) && this.isTamed()) {
+            return this.fedFood(player, held);
+        }
         if (!this.isVehicle() && !openInventory) {
             ItemStack stack = player.getItemInHand(hand);
             if (!stack.isEmpty()) {
@@ -547,10 +552,12 @@ public class PegasusEntity extends AbstractHorse {
                 if (speed > PegasusTuning.SOFT_LANDING_SPEED) {
                     float damage = (speed - PegasusTuning.SOFT_LANDING_SPEED) * PegasusTuning.HARD_LANDING_DAMAGE;
                     this.playSound(SoundEvents.HORSE_LAND, 0.8F, 0.8F);
-                    if (rider != null) {
-                        rider.hurtServer(level, level.damageSources().fall(), damage);
+                    if (damage > 0.0F) {
+                        if (rider != null) {
+                            rider.hurtServer(level, level.damageSources().fall(), damage);
+                        }
+                        this.hurtServer(level, level.damageSources().fall(), damage * 0.5F);
                     }
-                    this.hurtServer(level, level.damageSources().fall(), damage * 0.5F);
                     this.stumbleTicks = PegasusTuning.STUMBLE_TICKS;
                 } else {
                     this.playSound(SoundEvents.HORSE_LAND, 0.4F, 1.0F);
@@ -731,9 +738,9 @@ public class PegasusEntity extends AbstractHorse {
             } else if (powered) {
                 cost = PegasusTuning.CRUISE_COST;
             } else {
-                cost = 0.0F;
+                cost = -PegasusTuning.GLIDE_REGEN;
             }
-            this.stamina = Math.max(0.0F, this.stamina - cost);
+            this.stamina = Mth.clamp(this.stamina - cost, 0.0F, 1.0F);
 
             this.distanceFlown += observed.horizontalDistance();
             if (rider instanceof ServerPlayer serverRider && this.distanceFlown >= PegasusTuning.ICARUS_DISTANCE) {

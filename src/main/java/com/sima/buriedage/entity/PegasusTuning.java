@@ -47,15 +47,18 @@ public final class PegasusTuning {
     // ================================================================ stamina (0..1, shown on the jump bar)
 
     /** A full bar lasts this long in level powered flight. */
-    public static final float CRUISE_SECONDS = 30.0F;
+    public static final float CRUISE_SECONDS = 120.0F;
     /** A full bar lasts this long while climbing with the jump key held. */
-    public static final float CLIMB_SECONDS = 10.0F;
+    public static final float CLIMB_SECONDS = 40.0F;
     /** From empty to full while standing on the ground. */
-    public static final float REGEN_SECONDS = 60.0F;
+    public static final float REGEN_SECONDS = 15.0F;
+    /** From empty to full while gliding: no W, no jump, just riding the air. Descending is rest. */
+    public static final float GLIDE_REGEN_SECONDS = 45.0F;
 
     public static final float CRUISE_COST = 1.0F / (CRUISE_SECONDS * 20.0F);
     public static final float CLIMB_COST = 1.0F / (CLIMB_SECONDS * 20.0F);
     public static final float GROUND_REGEN = 1.0F / (REGEN_SECONDS * 20.0F);
+    public static final float GLIDE_REGEN = 1.0F / (GLIDE_REGEN_SECONDS * 20.0F);
 
     /** Below this the pegasus refuses to take off. */
     public static final float TAKEOFF_MIN_STAMINA = 0.1F;
@@ -124,10 +127,10 @@ public final class PegasusTuning {
 
     // ================================================================ landing and crashes
 
-    /** Touching down slower than this is a soft landing; faster is a stumble. */
-    public static final float SOFT_LANDING_SPEED = 0.45F;
-    /** Rider damage per block/tick above the soft limit. A landing at 1.0 costs (1.0 - 0.45) * 6 = 3.3 HP. */
-    public static final float HARD_LANDING_DAMAGE = 6.0F;
+    /** Touching down slower than this is a soft landing; faster is a stumble. Cruise is ~0.7, so only a dive stumbles. */
+    public static final float SOFT_LANDING_SPEED = 0.9F;
+    /** Rider damage per block/tick above the soft limit. 0 = landings never hurt, only the stumble remains. */
+    public static final float HARD_LANDING_DAMAGE = 0.0F;
     /** After a stumble the rider has no control for this long. */
     public static final int STUMBLE_TICKS = 20;
     /** Flying into a wall faster than this hurts rider and mount. */
