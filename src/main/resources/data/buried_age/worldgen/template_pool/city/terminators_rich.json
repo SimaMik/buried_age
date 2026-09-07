@@ -8,7 +8,7 @@
         "processors": "buried_age:city_archaeology",
         "projection": "rigid"
       },
-      "weight": 1
+      "weight": 2
     },
     {
       "element": {
@@ -19,7 +19,7 @@
         },
         "projection": "rigid"
       },
-      "weight": 9
+      "weight": 8
     }
   ]
 }
