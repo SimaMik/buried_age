@@ -140,11 +140,6 @@ public class BuriedCityStructure extends Structure {
         return true;
     }
 
-    /**
-     * A lake over the city drowns the whole idea: the pieces would sit in the water rather than
-     * under soil, and the burial pass would pile a rectangular island onto the surface. Any real
-     * water over the footprint sends the city somewhere else.
-     */
     private static boolean standsInWater(Structure.GenerationContext context, Map<Long, Integer> ground,
                                          List<BuriedCityPiece> pieces) {
         BoundingBox footprint = null;
@@ -183,11 +178,6 @@ public class BuriedCityStructure extends Structure {
         return piece.getElement() instanceof SinglePoolElement single && single.getTemplateLocation().equals(template);
     }
 
-    /**
-     * The lowest ground the box actually stands over. Only columns inside the box count: a ravine a
-     * few blocks past its corner says nothing about whether this piece is covered, and letting one
-     * in used to drag the whole city down after it.
-     */
     private static int lowestGround(Structure.GenerationContext context, Map<Long, Integer> cache, BoundingBox box) {
         int lowest = Integer.MAX_VALUE;
         for (int x : new int[] { box.minX(), box.maxX() }) {

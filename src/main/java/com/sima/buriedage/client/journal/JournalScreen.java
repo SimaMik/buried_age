@@ -436,11 +436,6 @@ public class JournalScreen extends Screen {
         this.drawWrapped(graphics, description, pageX, textY, TEXT_WIDTH, maxLines, known ? INK : FADED_INK, SMALL_TEXT);
     }
 
-    /**
-     * The pictures come from the artist at whatever size the shot was, so the frame asks the loaded
-     * texture how big it is and shrinks the whole of it into the page rather than cutting a corner
-     * out of it.
-     */
     private int pictureSize(Identifier picture) {
         AbstractTexture texture = this.minecraft.getTextureManager().getTexture(picture);
         int width = texture.getTexture().getWidth(0);
