@@ -13,10 +13,6 @@ public final class ModAttachments {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS =
             DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, TheBuriedAge.MODID);
 
-    /**
-     * Journal progress lives on the player, not on the book item: it survives death and a lost book,
-     * and only the owning player ever receives it.
-     */
     public static final Supplier<AttachmentType<JournalProgress>> JOURNAL = ATTACHMENTS.register("journal",
             () -> AttachmentType.builder(() -> JournalProgress.EMPTY)
                     .serialize(JournalProgress.MAP_CODEC)

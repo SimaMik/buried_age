@@ -29,16 +29,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jspecify.annotations.Nullable;
 
-/**
- * One block for every building there will ever be. The building id and the radius come from the
- * item's data component, so a marked item is placed and forgotten; the block entity then watches
- * for players once a second. Unlike the plain marker it never becomes targetable, not even while
- * holding one: remove it with {@code /setblock} or {@code /fill}.
- *
- * <p>{@code buried=true} is for templates with no cavity to hide the marker in: the block then
- * looks and digs like gravel, so a player tunnelling through the rubble never finds an invisible
- * hole. By the time they break it they have long stood inside the radius.
- */
 public class BuildingMarkerBlock extends MarkerBlock implements EntityBlock {
     public static final MapCodec<BuildingMarkerBlock> CODEC = simpleCodec(BuildingMarkerBlock::new);
     public static final BooleanProperty BURIED = BooleanProperty.create("buried");

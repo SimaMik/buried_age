@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.zip.*;
 
 public class BuildCityTemplates {
-
     static final Path DIR = Path.of("src/main/resources/data/buried_age/structure/city");
     static final String CAVITY = "buried_age:cavity_marker";
     static final Set<String> KEEP = Set.of("minecraft:jigsaw", "minecraft:chest", "minecraft:decorated_pot",
@@ -258,11 +257,6 @@ public class BuildCityTemplates {
         }
     }
 
-    /**
-     * Some buildings were saved with their ground floor one block lower than the streets: their
-     * room already starts at local y=0, so the player steps down out of the road. Lift the whole
-     * template one block, keeping the jigsaw at y=1, and grow a real floor underneath.
-     */
     static void raiseIfLow(String file) throws IOException {
         Path p = DIR.resolve(file);
         Tpl t = new Tpl(load(p));
@@ -364,7 +358,6 @@ public class BuildCityTemplates {
                 .map(Map.Entry::getKey).orElse("minecraft:stone_bricks");
     }
 
-    /** Move a jigsaw connector to another face of the template, keeping its pool data. */
     static void moveJigsaw(String file, int fx, int fy, int fz, int tx, int ty, int tz, String orientation)
             throws IOException {
         Path p = DIR.resolve(file);
@@ -388,7 +381,6 @@ public class BuildCityTemplates {
                 file, fx, fy, fz, tx, ty, tz, orientation);
     }
 
-    /** Point a block that carries a horizontal facing in a fixed direction inside the template. */
     static void faceBlock(String file, String blockName, String facing) throws IOException {
         Path p = DIR.resolve(file);
         Tpl t = new Tpl(load(p));
@@ -564,7 +556,6 @@ public class BuildCityTemplates {
         System.out.printf("  %-18s buried: %d cavity cells filled with rubble, %d passage cells kept%n", file, filled, keep.size());
     }
 
-    /** A corridor we cut ourselves is one cell wide; a real room is open to at least one side. */
     static boolean sideOpen(Tpl t, int x, int y, int z, int dx, int dz) {
         int lx = dz;
         int lz = dx;
@@ -676,7 +667,6 @@ public class BuildCityTemplates {
             makeCopy("terminator.nbt", "terminator_" + d + ".nbt",
                     new Spec(2, 1, 0, street, "buried_age:empty", "minecraft:empty", 0));
         }
-
 
         System.out.println("== villa closing off the rich street ==");
         makeCopy("villa.nbt", "villa_end_rich.nbt",

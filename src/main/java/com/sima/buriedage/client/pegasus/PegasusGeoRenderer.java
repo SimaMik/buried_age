@@ -16,11 +16,6 @@ import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.Identifier;
 import org.jspecify.annotations.Nullable;
 
-/**
- * The artist's GeckoLib model. The saddle and bridle are bones of the model wearing the vanilla
- * saddle pixels, shown by scaling them back from zero when a saddle is on; the foal is the same model at half size; in flight the whole body
- * pitches with the flight path and banks into turns on top of GeckoLib's own rotations.
- */
 public class PegasusGeoRenderer extends GeoEntityRenderer<PegasusEntity, LivingEntityRenderState> {
     private static final DataTicket<Float> ROLL = DataTicket.create("buried_age_roll", Float.class);
     private static final DataTicket<Float> PITCH = DataTicket.create("buried_age_pitch", Float.class);
@@ -28,7 +23,7 @@ public class PegasusGeoRenderer extends GeoEntityRenderer<PegasusEntity, LivingE
     private static final String SADDLE_BONE = "saddle";
     private static final String BRIDLE_BONE = "bridle";
     private static final float FOAL_SCALE = 0.5F;
-    /** Height of the body centre in blocks: the point the flight pitch and bank rotate around. */
+
     private static final float TILT_PIVOT = 1.2F;
 
     public PegasusGeoRenderer(EntityRendererProvider.Context context) {

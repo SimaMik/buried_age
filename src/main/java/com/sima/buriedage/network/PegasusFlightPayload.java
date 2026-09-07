@@ -8,10 +8,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
-/**
- * The rider's client, which simulates the flight, tells the server what just happened to the mount.
- * The server trusts only the kind of event and the speed; it checks that the sender is the rider.
- */
 public record PegasusFlightPayload(int entityId, Kind kind, float speed) implements CustomPacketPayload {
     public static final Type<PegasusFlightPayload> TYPE =
             new Type<>(Identifier.fromNamespaceAndPath(TheBuriedAge.MODID, "pegasus_flight"));

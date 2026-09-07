@@ -37,14 +37,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jspecify.annotations.Nullable;
 
-/**
- * The archaeological journal as an open book: two vanilla book pages side by side, spines meeting
- * in the middle, drawn under one scale so the spread fills the window at any GUI scale. One tab for
- * finds, one per city prefix. Spreads turn with the page arrows, the arrow keys and the mouse wheel.
- */
 public class JournalScreen extends Screen {
     private static final int PAGE = 192;
-    /** The page body occupies x 20..165 of the texture; the right page starts here so the two stitched edges meet. */
+
     private static final int RIGHT_PAGE_X = 152;
     private static final int SPREAD_WIDTH = RIGHT_PAGE_X + PAGE;
     private static final float PAGE_UV = PAGE / 256.0F;
@@ -119,9 +114,6 @@ public class JournalScreen extends Screen {
         }
     }
 
-    // ---------------------------------------------------------------- layout
-
-    /** The spread is drawn in book units (384 x 192) under one scale that fits the window. */
     private void layout() {
         float byHeight = (this.height - 20 - 2 * MARGIN - DONE_GAP) / (float) PAGE;
         float byWidth = (this.width - 2 * MARGIN) / (float) SPREAD_WIDTH;
@@ -154,8 +146,6 @@ public class JournalScreen extends Screen {
     private static boolean inside(float x, float y, int x0, int y0, int w, int h) {
         return x >= x0 && x < x0 + w && y >= y0 && y < y0 + h;
     }
-
-    // ---------------------------------------------------------------- state
 
     private JournalProgress progress() {
         return this.minecraft.player == null ? JournalProgress.EMPTY : this.minecraft.player.getData(ModAttachments.JOURNAL);
@@ -202,8 +192,6 @@ public class JournalScreen extends Screen {
     private void playTurn() {
         this.minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.0F));
     }
-
-    // ---------------------------------------------------------------- input
 
     @Override
     public boolean keyPressed(KeyEvent event) {
@@ -267,8 +255,6 @@ public class JournalScreen extends Screen {
         int index = (int) ((x - LEFT_TEXT_X) / TAB_WIDTH);
         return index < this.tabs.size() ? index : -1;
     }
-
-    // ---------------------------------------------------------------- drawing
 
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
@@ -403,7 +389,6 @@ public class JournalScreen extends Screen {
         }
     }
 
-    /** One building fills one page: name, icon with the loot grid beside it, then the description in small print. */
     private void drawBuilding(GuiGraphicsExtractor graphics, JournalProgress progress, JournalEntry.Building building,
                               int pageX, float x, float y, int mouseX, int mouseY) {
         boolean known = progress.hasBuilding(building.id());
@@ -452,7 +437,6 @@ public class JournalScreen extends Screen {
         this.drawWrapped(graphics, text, x, y, width, maxLines, color, 1.0F);
     }
 
-    /** Wraps {@code text} into {@code width} book units and draws it under {@code scale}, so the font shrinks with it. */
     private void drawWrapped(GuiGraphicsExtractor graphics, Component text, int x, int y, int width, int maxLines, int color, float scale) {
         List<FormattedCharSequence> lines = this.font.split(text, (int) (width / scale));
         graphics.pose().pushMatrix();
@@ -464,10 +448,6 @@ public class JournalScreen extends Screen {
         graphics.pose().popMatrix();
     }
 
-    /**
-     * The unknown-item silhouette: the item's own sprite, multiplied down to a dark shade. Nothing
-     * is drawn from a placeholder texture; a 3D item without a flat sprite falls back to a dark square.
-     */
     private void drawSilhouette(GuiGraphicsExtractor graphics, JournalEntry.Find find, ItemStack stack, int x, int y) {
         Optional<TextureAtlasSprite> sprite = this.spriteCache.computeIfAbsent(find.key(), key -> Optional.ofNullable(this.resolveSprite(stack)));
         if (sprite.isPresent()) {

@@ -16,13 +16,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-/**
- * Wires the journal into the game loop: loads the entries, ships them to clients, and looks through
- * every player's inventory once a second for items the journal is waiting on.
- */
 @EventBusSubscriber(modid = TheBuriedAge.MODID)
 public final class JournalEvents {
-    /** Ticks between two inventory scans. One second is plenty; the scan is a few dozen map lookups. */
     private static final int SCAN_INTERVAL = 20;
 
     private JournalEvents() {}

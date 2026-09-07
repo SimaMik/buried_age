@@ -1,10 +1,6 @@
 import java.nio.file.*;
 import java.util.*;
 
-/**
- * Prints what matters about every city template: size, palette, markers, jigsaws, forge facing.
- * Usage: java -cp <classes> DumpTemplates [directory]   (default: the templates in the repo)
- */
 public class DumpTemplates {
     public static void main(String[] args) throws Exception {
         Path dir = args.length > 0 ? Path.of(args[0]) : BuildCityTemplates.DIR;

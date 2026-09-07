@@ -1,11 +1,6 @@
 import java.nio.file.*;
 import java.util.*;
 
-/**
- * Rewrites surface_hint.nbt as a bare locator: a 2x3x2 box holding only the jigsaw that hangs it
- * above the agora. The visible stump and the column under it are built by BuriedCityStructure.
- * Usage: java -cp <classes> BuildSurfaceHint   (run from the repository root)
- */
 public class BuildSurfaceHint {
     public static void main(String[] args) throws Exception {
         Path file = Path.of("src/main/resources/data/buried_age/structure/surface_hint.nbt");

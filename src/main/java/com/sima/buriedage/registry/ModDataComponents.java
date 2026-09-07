@@ -26,7 +26,6 @@ public final class ModDataComponents {
                     .persistent(Codec.INT)
                     .networkSynchronized(ByteBufCodecs.VAR_INT));
 
-    /** Building id and radius on a marker item; the block entity takes it over when the block is placed. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<BuildingMarker>> BUILDING_MARKER =
             COMPONENTS.registerComponentType("building_marker", b -> b
                     .persistent(BuildingMarker.CODEC)

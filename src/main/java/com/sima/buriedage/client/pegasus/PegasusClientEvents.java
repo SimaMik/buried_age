@@ -13,7 +13,6 @@ import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 public final class PegasusClientEvents {
     private PegasusClientEvents() {}
 
-    /** The view widens with airspeed, the way the elytra does it. */
     @SubscribeEvent
     static void onComputeFov(ComputeFovModifierEvent event) {
         if (event.getPlayer().getVehicle() instanceof PegasusEntity pegasus && pegasus.isFlying()) {

@@ -2,14 +2,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
 
-/**
- * Builds the shipped pegasus texture from the artist's original plus the vanilla saddle sheet:
- * the top strip of {@code textures/entity/equipment/horse_saddle/saddle.png} (body saddle, head
- * strap, mouth wrap, bit rings) is pasted into the unused corner at (32,104) of the 128x128 sheet,
- * so the saddle bones of the geo model can point at unchanged vanilla pixels.
- *
- * Usage: java tools/PasteSaddle.java <artist original> <vanilla saddle.png> <output pegasus.png>
- */
 public final class PasteSaddle {
     static final int DST_X = 32;
     static final int DST_Y = 104;

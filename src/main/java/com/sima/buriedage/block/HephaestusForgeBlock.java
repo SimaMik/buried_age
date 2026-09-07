@@ -82,11 +82,6 @@ public class HephaestusForgeBlock extends HorizontalDirectionalBlock implements 
         return state.getValue(HALF) == DoubleBlockHalf.UPPER ? UPPER_SHAPES.get(state.getValue(FACING)) : LOWER_SHAPE;
     }
 
-    /**
-     * Both halves carry a block entity, the way a bed does: world generation marks every state of
-     * an EntityBlock as having one, and a half that answers with null leaves a stray marker behind
-     * in every generated temple. Only the lower half's entity is ever used.
-     */
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new HephaestusForgeBlockEntity(pos, state);

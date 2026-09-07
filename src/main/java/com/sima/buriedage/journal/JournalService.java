@@ -12,7 +12,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 
-/** The only two ways progress ever changes. Server side; the attachment carries the result to the client. */
 public final class JournalService {
     private JournalService() {}
 
@@ -20,7 +19,6 @@ public final class JournalService {
         return player.getData(ModAttachments.JOURNAL);
     }
 
-    /** Nothing is written down without the book: the journal has to be somewhere in the inventory. */
     public static boolean carriesJournal(ServerPlayer player) {
         if (player.getOffhandItem().is(ModItems.FIELD_JOURNAL.get())) {
             return true;
@@ -33,7 +31,6 @@ public final class JournalService {
         return false;
     }
 
-    /** Records a find the first time it is seen; later calls are free. */
     public static void discoverFind(ServerPlayer player, JournalEntry.Find find, ItemStack seen) {
         Identifier key = find.key();
         JournalProgress current = progress(player);
@@ -45,10 +42,6 @@ public final class JournalService {
         celebrate(player, Component.translatable("message.buried_age.journal.find", seen.getHoverName()));
     }
 
-    /**
-     * Called every second for every player standing inside a marker. The advancement trigger fires
-     * each time so a criterion added later still completes; the journal and the message only once.
-     */
     public static void visitBuilding(ServerPlayer player, String building) {
         ModTriggers.BUILDING_DISCOVERED.get().trigger(player, building);
 

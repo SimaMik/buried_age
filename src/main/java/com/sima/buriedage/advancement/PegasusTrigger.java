@@ -10,7 +10,6 @@ import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.advancements.criterion.SimpleCriterionTrigger;
 import net.minecraft.server.level.ServerPlayer;
 
-/** One trigger for the pegasus milestones; {@code event} is "hatched", "first_flight" or "icarus". */
 public class PegasusTrigger extends SimpleCriterionTrigger<PegasusTrigger.TriggerInstance> {
     @Override
     public Codec<TriggerInstance> codec() {

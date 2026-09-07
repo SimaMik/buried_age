@@ -38,10 +38,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Hatches on a timer wherever it is set down, in three cracking stages like the sniffer egg. The
- * block entity remembers who placed it, so the foal belongs to that player from its first breath.
- */
 public class PegasusEggBlock extends Block implements EntityBlock {
     public static final MapCodec<PegasusEggBlock> CODEC = simpleCodec(PegasusEggBlock::new);
     public static final IntegerProperty HATCH = BlockStateProperties.HATCH;

@@ -12,7 +12,6 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.Nullable;
 
-/** Only remembers who set the egg down, so the foal can belong to them. */
 public class PegasusEggBlockEntity extends BlockEntity {
     private @Nullable UUID owner;
 

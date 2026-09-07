@@ -4,7 +4,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 
 public final class EchoTuning {
-
     public static final boolean AUTO_SPAWN_ENABLED = true;
 
     public static final int COOLDOWN_MIN = 50 * 20;

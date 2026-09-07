@@ -9,7 +9,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
-/** A key to the journal screen and nothing more: all progress lives on the player. */
 public class FieldJournalItem extends Item {
     public FieldJournalItem(Item.Properties properties) {
         super(properties);

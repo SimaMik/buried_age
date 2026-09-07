@@ -1,16 +1,7 @@
 import java.nio.file.*;
 import java.util.*;
 
-/**
- * Puts one building marker into every building template and converts the old cella markers.
- *
- * Run from the repository root:  java tools/StampBuildingMarkers.java
- *
- * Idempotent: a template that already carries a marker for its building is left alone. The marker
- * goes into the air (or cavity) block nearest the template's centre, so no rubble is displaced.
- */
 public class StampBuildingMarkers {
-
     static final Path DIR = BuildCityTemplates.DIR;
     static final String MARKER = "buried_age:building_marker";
     static final String OLD_CELLA = "buried_age:cella_marker";

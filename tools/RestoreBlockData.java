@@ -1,15 +1,6 @@
 import java.nio.file.*;
 import java.util.*;
 
-/**
- * Copies block-entity NBT (chest loot tables, pot loot, forge contents) from an older copy of the
- * templates into the current ones. Needed once: the first version of raiseIfLow dropped the NBT of
- * every block it lifted, which emptied the chests of the four raised buildings.
- *
- * Usage: java -cp <classes> RestoreBlockData <directory with the older templates>
- * A block gets its NBT back only if it sits one template-height-difference higher, is the same
- * block, and carries no NBT of its own yet. Jigsaws and markers are left alone.
- */
 public class RestoreBlockData {
     public static void main(String[] args) throws Exception {
         Path oldDir = Path.of(args[0]);

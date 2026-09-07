@@ -11,7 +11,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 
-/** Every loaded entry, sorted and indexed. Built once per datapack load and shipped to clients whole. */
 public final class JournalBook {
     public static final JournalBook EMPTY = new JournalBook(Map.of());
 
@@ -57,7 +56,6 @@ public final class JournalBook {
 
     private final List<String> groupOrder;
 
-    /** Rebuilds a book from the flat list a client received. Ids are synthetic; order is already final. */
     public static JournalBook of(List<JournalEntry> entries) {
         Map<Identifier, JournalEntry> map = new LinkedHashMap<>();
         for (int i = 0; i < entries.size(); i++) {
@@ -74,7 +72,6 @@ public final class JournalBook {
         return this.finds;
     }
 
-    /** Group keys in display order: the order of the first building of each group. */
     public List<String> groups() {
         return this.groupOrder;
     }

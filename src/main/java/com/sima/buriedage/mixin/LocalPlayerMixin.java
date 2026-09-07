@@ -8,10 +8,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/**
- * The horse jump bar shows the pegasus' stamina. Vanilla fills the bar from its own jump charge;
- * while riding a pegasus the value comes from the mount instead, and the bar reads the same sprites.
- */
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin {
     @Inject(method = "getJumpRidingScale", at = @At("HEAD"), cancellable = true)

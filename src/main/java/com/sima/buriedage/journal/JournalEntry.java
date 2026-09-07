@@ -20,11 +20,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 
-/**
- * One journal entry as it comes out of a datapack file. Two kinds exist: a find (an item the player
- * has to pick up) and a building (a marker the player has to walk up to). Every text the entry shows
- * is a language key derived from its id, so the JSON never carries prose.
- */
 public sealed interface JournalEntry permits JournalEntry.Find, JournalEntry.Building {
     Codec<JournalEntry> CODEC = Codec.STRING.partialDispatch("type",
             entry -> DataResult.success(entry.typeName()),
@@ -36,10 +31,8 @@ public sealed interface JournalEntry permits JournalEntry.Find, JournalEntry.Bui
 
     String typeName();
 
-    /** Sort key inside its tab; ties are broken by the file id. */
     int order();
 
-    /** An item to collect. {@code blueprint} narrows an Ancient Blueprint down to one enchantment. */
     record Find(Identifier item, Optional<ResourceKey<Enchantment>> blueprint, int order) implements JournalEntry {
         public static final MapCodec<Find> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                         Identifier.CODEC.fieldOf("item").forGetter(Find::item),
@@ -52,7 +45,6 @@ public sealed interface JournalEntry permits JournalEntry.Find, JournalEntry.Bui
             return "find";
         }
 
-        /** What the progress set records. Plain items use their own id; blueprints get the enchantment appended. */
         public Identifier key() {
             return this.blueprint
                     .map(key -> Identifier.fromNamespaceAndPath(this.item.getNamespace(),
@@ -65,7 +57,6 @@ public sealed interface JournalEntry permits JournalEntry.Find, JournalEntry.Bui
             return "journal.buried_age.find." + key.getNamespace() + "." + key.getPath().replace('/', '.');
         }
 
-        /** The generic description of the item, used when a blueprint has no line of its own. */
         public String fallbackDescriptionKey() {
             return "journal.buried_age.find." + this.item.getNamespace() + "." + this.item.getPath().replace('/', '.');
         }
@@ -82,7 +73,6 @@ public sealed interface JournalEntry permits JournalEntry.Find, JournalEntry.Bui
             return carried != null && carried.is(this.blueprint.get());
         }
 
-        /** The icon shown in the grid. Needs registries only for blueprint variants. */
         public ItemStack icon(HolderLookup.Provider registries) {
             if (!BuiltInRegistries.ITEM.containsKey(this.item)) {
                 return ItemStack.EMPTY;
@@ -98,7 +88,6 @@ public sealed interface JournalEntry permits JournalEntry.Find, JournalEntry.Bui
         }
     }
 
-    /** A building that opens when the player walks into its marker's radius. */
     record Building(String id, Identifier icon, List<Identifier> loot, int order) implements JournalEntry {
         public static final MapCodec<Building> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                         Codec.STRING.fieldOf("id").forGetter(Building::id),

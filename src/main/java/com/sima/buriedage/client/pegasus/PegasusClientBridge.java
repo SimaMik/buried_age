@@ -6,7 +6,6 @@ import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
-/** The two client-only things the pegasus needs: the rider's raw keys and a way to talk to the server. */
 public final class PegasusClientBridge {
     private PegasusClientBridge() {}
 

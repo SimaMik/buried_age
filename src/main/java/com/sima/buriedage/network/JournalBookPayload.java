@@ -12,7 +12,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
-/** The whole journal entry list, sent to a player on login and after every datapack reload. */
 public record JournalBookPayload(List<JournalEntry> entries) implements CustomPacketPayload {
     public static final Type<JournalBookPayload> TYPE =
             new Type<>(Identifier.fromNamespaceAndPath(TheBuriedAge.MODID, "journal_book"));

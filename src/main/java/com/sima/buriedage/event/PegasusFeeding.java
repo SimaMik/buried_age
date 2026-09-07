@@ -12,12 +12,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
-/**
- * A rider cannot aim at the mount under them, so a plain golden apple used from the saddle goes to
- * the pegasus when its bar is nearly empty; any other time, and the enchanted apple always, the
- * rider eats it as usual. Decided from the synced bar only, so client and server agree and the
- * client never starts eating what the server feeds.
- */
 @EventBusSubscriber(modid = TheBuriedAge.MODID)
 public final class PegasusFeeding {
     private PegasusFeeding() {}

@@ -12,10 +12,6 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 
-/**
- * Loads every {@code data/<namespace>/journal/**.json} file into the server-side book. Adding a
- * building or a find is a new file in that folder, nothing else.
- */
 public final class JournalEntries extends SimpleJsonResourceReloadListener<JournalEntry> {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(TheBuriedAge.MODID, "journal");
 
@@ -40,7 +36,6 @@ public final class JournalEntries extends SimpleJsonResourceReloadListener<Journ
                 valid.size(), server.finds().size(), server.groups().size());
     }
 
-    /** The book as the server currently knows it. */
     public static JournalBook server() {
         return server;
     }

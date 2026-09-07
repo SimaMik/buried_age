@@ -14,7 +14,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.Block;
 
-/** The marker as an item. The building id sits in its component and is shown on the tooltip. */
 public class BuildingMarkerItem extends BlockItem {
     public BuildingMarkerItem(Block block, Item.Properties properties) {
         super(block, properties);

@@ -15,10 +15,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
-/**
- * What one player has discovered. Immutable: every change makes a new value, which is what lets the
- * attachment system notice the change and push it to the client.
- */
 public record JournalProgress(Set<Identifier> finds, Set<String> buildings) {
     public static final JournalProgress EMPTY = new JournalProgress(Set.of(), Set.of());
 

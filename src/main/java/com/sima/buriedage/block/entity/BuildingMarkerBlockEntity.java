@@ -16,10 +16,6 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * Keeps the building id and the radius. Both round-trip through the item component (so /give works)
- * and through plain NBT (so a structure block saves them into the template).
- */
 public class BuildingMarkerBlockEntity extends BlockEntity {
     private static final int CHECK_INTERVAL = 20;
 

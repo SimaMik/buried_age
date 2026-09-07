@@ -12,7 +12,6 @@ import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.advancements.criterion.SimpleCriterionTrigger;
 import net.minecraft.server.level.ServerPlayer;
 
-/** Fires every second a player stands inside a building marker. {@code building} narrows it to one id. */
 public class BuildingDiscoveredTrigger extends SimpleCriterionTrigger<BuildingDiscoveredTrigger.TriggerInstance> {
     @Override
     public Codec<TriggerInstance> codec() {
