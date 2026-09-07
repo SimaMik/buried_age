@@ -3,7 +3,6 @@ package com.sima.buriedage.entity;
 import com.sima.buriedage.registry.ModEntities;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -268,14 +267,27 @@ public class EchoEntity extends LivingEntity {
 
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
-        this.dissolve(level);
         return false;
     }
 
-    private void dissolve(ServerLevel level) {
-        level.sendParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getY() + 1.0, this.getZ(),
-                EchoTuning.DISSOLVE_PARTICLES, 0.2, 0.4, 0.2, 0.01);
-        this.discard();
+    @Override
+    public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
+        return true;
+    }
+
+    @Override
+    public boolean attackable() {
+        return false;
+    }
+
+    @Override
+    public boolean isAttackable() {
+        return false;
+    }
+
+    @Override
+    public boolean canBeHitByProjectile() {
+        return false;
     }
 
     public void playArrivalSound(ServerLevel level) {

@@ -1,5 +1,9 @@
 package com.sima.buriedage.worldgen;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.mojang.serialization.MapCodec;
@@ -14,8 +18,10 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -25,13 +31,6 @@ import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer;
 import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
 import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 
-/**
- * The buried city is a plain jigsaw structure with one addition: after the pieces are placed,
- * the marble stump on the surface is continued straight down through the ground until it meets
- * the roof of the agora, so what pokes out of the grass reads as the tip of a real column and
- * digging along it leads into the city. Jigsaw cannot do this on its own: a shaft piece would
- * either collide with the agora or stop short of it, depending on how deep the city sits.
- */
 public class BuriedCityStructure extends Structure {
     public static final MapCodec<BuriedCityStructure> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                     Structure.settingsCodec(i),
@@ -41,6 +40,16 @@ public class BuriedCityStructure extends Structure {
     private static final Identifier HINT = Identifier.fromNamespaceAndPath(TheBuriedAge.MODID, "surface_hint");
     private static final Identifier AGORA = Identifier.fromNamespaceAndPath(TheBuriedAge.MODID, "city/agora");
     private static final BlockState COLUMN = Blocks.QUARTZ_PILLAR.defaultBlockState();
+    private static final BlockState[][] STUMP = {
+            { Blocks.CALCITE.defaultBlockState(), COLUMN, Blocks.CHISELED_QUARTZ_BLOCK.defaultBlockState(), null },
+            { null, Blocks.DIORITE_WALL.defaultBlockState().setValue(WallBlock.UP, true), null, null },
+    };
+
+    private static final int COLUMN_GAP = 2;
+    private static final int COVER = 2;
+    private static final int SAMPLE_STEP = 8;
+    private static final int MAX_SINK = 6;
+    private static final int BURIAL_MARGIN = 5;
 
     private final JigsawStructure jigsaw;
 
@@ -51,7 +60,90 @@ public class BuriedCityStructure extends Structure {
 
     @Override
     protected Optional<Structure.GenerationStub> findGenerationPoint(Structure.GenerationContext context) {
-        return this.jigsaw.findValidGenerationPoint(context);
+        return this.jigsaw.findValidGenerationPoint(context).map(stub -> {
+            List<BuriedCityPiece> pieces = new ArrayList<>();
+            for (StructurePiece piece : stub.getPiecesBuilder().build().pieces()) {
+                if (piece instanceof PoolElementStructurePiece pool) {
+                    pieces.add(new BuriedCityPiece(context.structureTemplateManager(), pool));
+                }
+            }
+
+            settle(context, pieces);
+            return new Structure.GenerationStub(stub.position(), builder -> pieces.forEach(builder::addPiece));
+        });
+    }
+
+    private static void settle(Structure.GenerationContext context, List<BuriedCityPiece> pieces) {
+        Map<Long, Integer> ground = new HashMap<>();
+        int sink = 0;
+        BuriedCityPiece hint = null;
+        BuriedCityPiece agora = null;
+        for (BuriedCityPiece piece : pieces) {
+            if (!piece.isRigid()) {
+                if (isTemplate(piece, HINT)) {
+                    hint = piece;
+                }
+
+                continue;
+            }
+
+            if (isTemplate(piece, AGORA)) {
+                agora = piece;
+            }
+
+            BoundingBox box = piece.getBoundingBox();
+            int lowestOver = lowestGround(context, ground, box);
+            int lowestAround = lowestGround(context, ground, box.inflatedBy(BURIAL_MARGIN, 0, BURIAL_MARGIN));
+            sink = Math.max(sink, box.maxY() + COVER - lowestOver);
+            sink = Math.max(sink, box.minY() + BuriedCityPiece.BURIAL_REACH - lowestAround);
+        }
+
+        if (sink > 0) {
+            TheBuriedAge.LOGGER.debug("[city] terrain asks for {} blocks more depth, sinking {}", sink, Math.min(sink, MAX_SINK));
+            sink = Math.min(sink, MAX_SINK);
+            for (BuriedCityPiece piece : pieces) {
+                if (piece.isRigid()) {
+                    piece.move(0, -sink, 0);
+                }
+            }
+        }
+
+        if (hint != null && agora != null) {
+            BoundingBox box = agora.getBoundingBox();
+            int x = box.maxX() + 1 + COLUMN_GAP;
+            int z = (box.minZ() + box.maxZ()) / 2;
+            int top = Integer.MIN_VALUE;
+            for (int dx = 0; dx < 2; dx++) {
+                for (int dz = 0; dz < 2; dz++) {
+                    top = Math.max(top, context.chunkGenerator().getFirstOccupiedHeight(x + dx, z + dz,
+                            Heightmap.Types.WORLD_SURFACE_WG, context.heightAccessor(), context.randomState()));
+                }
+            }
+
+            BoundingBox old = hint.getBoundingBox();
+            hint.move(x - old.minX(), top + 1 - old.minY(), z - old.minZ());
+        }
+    }
+
+    private static boolean isTemplate(PoolElementStructurePiece piece, Identifier template) {
+        return piece.getElement() instanceof SinglePoolElement single && single.getTemplateLocation().equals(template);
+    }
+
+    private static int lowestGround(Structure.GenerationContext context, Map<Long, Integer> cache, BoundingBox box) {
+        int lowest = Integer.MAX_VALUE;
+        int firstX = Math.floorDiv(box.minX(), SAMPLE_STEP) * SAMPLE_STEP;
+        int firstZ = Math.floorDiv(box.minZ(), SAMPLE_STEP) * SAMPLE_STEP;
+        for (int x = firstX; x <= box.maxX() + SAMPLE_STEP - 1; x += SAMPLE_STEP) {
+            for (int z = firstZ; z <= box.maxZ() + SAMPLE_STEP - 1; z += SAMPLE_STEP) {
+                int sx = x;
+                int sz = z;
+                int height = cache.computeIfAbsent(BlockPos.asLong(sx, 0, sz), key -> context.chunkGenerator()
+                        .getFirstOccupiedHeight(sx, sz, Heightmap.Types.OCEAN_FLOOR_WG, context.heightAccessor(), context.randomState()));
+                lowest = Math.min(lowest, height);
+            }
+        }
+
+        return lowest;
     }
 
     @Override
@@ -65,34 +157,45 @@ public class BuriedCityStructure extends Structure {
         BoundingBox hint = null;
         BoundingBox agora = null;
         for (StructurePiece piece : pieces.pieces()) {
-            if (!(piece instanceof PoolElementStructurePiece pool) || !(pool.getElement() instanceof SinglePoolElement single)) {
+            if (!(piece instanceof PoolElementStructurePiece pool)) {
                 continue;
             }
-            Identifier template = single.getTemplateLocation();
-            if (template.equals(HINT)) {
+
+            if (isTemplate(pool, HINT)) {
                 hint = pool.getBoundingBox();
-            } else if (template.equals(AGORA)) {
+            } else if (isTemplate(pool, AGORA)) {
                 agora = pool.getBoundingBox();
             }
         }
+
         if (hint == null || agora == null) {
             return;
         }
 
-        int top = hint.minY() - 1;
+        int base = hint.minY();
         int bottom = agora.maxY() + 1;
-        if (top < bottom || hint.maxX() < chunkBB.minX() || hint.minX() > chunkBB.maxX()
+        if (base <= bottom || hint.maxX() < chunkBB.minX() || hint.minX() > chunkBB.maxX()
                 || hint.maxZ() < chunkBB.minZ() || hint.minZ() > chunkBB.maxZ()) {
             return;
         }
 
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        for (int x = hint.minX(); x <= hint.maxX(); x++) {
-            for (int z = hint.minZ(); z <= hint.maxZ(); z++) {
-                for (int y = top; y >= bottom; y--) {
+        for (int dx = 0; dx < 2; dx++) {
+            for (int dz = 0; dz < 2; dz++) {
+                int x = hint.minX() + dx;
+                int z = hint.minZ() + dz;
+                for (int y = base - 1; y >= bottom; y--) {
                     pos.set(x, y, z);
                     if (chunkBB.isInside(pos)) {
                         level.setBlock(pos, COLUMN, 2);
+                    }
+                }
+
+                for (int layer = 0; layer < STUMP.length; layer++) {
+                    BlockState state = STUMP[layer][dx * 2 + dz];
+                    pos.set(x, base + layer, z);
+                    if (state != null && chunkBB.isInside(pos)) {
+                        level.setBlock(pos, state, 2);
                     }
                 }
             }

@@ -21,9 +21,11 @@ public final class EchoTuning {
     public static final double SPAWN_RADIUS_MIN = 4.0;
     public static final double SPAWN_RADIUS_MAX = 14.0;
 
-    public static final int SPAWN_VERTICAL_SEARCH = 4;
+    public static final int SPAWN_FLOOR_ABOVE = 2;
+    public static final int SPAWN_FLOOR_BELOW = 3;
 
-    public static final int SPAWN_FLOOR_SEARCH = 5;
+    public static final int PLAYER_ABOVE_FLOOR = 9;
+    public static final int PLAYER_BELOW_FLOOR = 3;
 
     public static final int WEIGHT_DRIFT = 45;
     public static final int WEIGHT_WANDER = 35;
@@ -33,8 +35,6 @@ public final class EchoTuning {
     public static final int FADE_TICKS = 40;
 
     public static final double BOB_SPEED = 0.12;
-
-    public static final int DISSOLVE_PARTICLES = 12;
 
     public static final float WHISPER_VOLUME = 0.35F;
     public static final float WHISPER_PITCH = 0.6F;
