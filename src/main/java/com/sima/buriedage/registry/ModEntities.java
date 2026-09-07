@@ -18,7 +18,7 @@ public final class ModEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<PegasusEntity>> PEGASUS =
             ENTITIES.registerEntityType("pegasus", PegasusEntity::new, MobCategory.CREATURE,
-                    builder -> builder.sized(1.3964844F, 1.9F).eyeHeight(1.6F).passengerAttachments(1.62F).clientTrackingRange(10));
+                    builder -> builder.sized(1.3964844F, 1.9F).eyeHeight(1.6F).passengerAttachments(1.44375F).clientTrackingRange(10));
 
     private ModEntities() {}
 }
