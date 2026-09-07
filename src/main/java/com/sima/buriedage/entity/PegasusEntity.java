@@ -58,6 +58,7 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
     private static final EntityDataAccessor<Float> DATA_STAMINA = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Byte> DATA_MODE = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Float> DATA_PITCH = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> DATA_EXHAUSTED = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.BOOLEAN);
 
     private static final int REMOTE_EVENT_INTERVAL = 5;
 
@@ -83,6 +84,7 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
     private boolean flying;
+    private boolean exhausted;
     private boolean heldReins;
     private boolean toldIcarus;
     private float airspeed;
@@ -128,6 +130,7 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         entityData.define(DATA_STAMINA, 1.0F);
         entityData.define(DATA_MODE, (byte) 0);
         entityData.define(DATA_PITCH, 0.0F);
+        entityData.define(DATA_EXHAUSTED, false);
     }
 
     @Override
@@ -147,6 +150,17 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
 
     public float getStamina() {
         return this.level().isClientSide() ? this.entityData.get(DATA_STAMINA) : this.stamina;
+    }
+
+    public boolean isExhausted() {
+        return this.level().isClientSide() ? this.entityData.get(DATA_EXHAUSTED) : this.exhausted;
+    }
+
+    private void setExhausted(boolean value) {
+        if (this.exhausted != value) {
+            this.exhausted = value;
+            this.entityData.set(DATA_EXHAUSTED, value);
+        }
     }
 
     public Mode getMode() {
@@ -296,6 +310,7 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         }
         this.stamina = 1.0F;
         this.entityData.set(DATA_STAMINA, 1.0F);
+        this.setExhausted(false);
         return true;
     }
 
@@ -564,23 +579,31 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
     private void flyTick() {
         Player rider = this.rider();
         Intent intent = rider != null ? Intent.of(rider) : Intent.NONE;
-        boolean hasStamina = this.getStamina() > 0.0F;
+        boolean powered = !this.isExhausted();
         boolean stalled = this.stallTicks > 0;
 
         float targetPitch;
         if (stalled) {
             targetPitch = PegasusTuning.STALL_NOSE_DOWN;
-        } else if (intent.climb() && hasStamina) {
-            targetPitch = Math.min(intent.forward() ? intent.pitch() : PegasusTuning.CLIMB_PITCH, PegasusTuning.CLIMB_PITCH);
+        } else if (intent.climb() && powered) {
+            targetPitch = Mth.clamp(intent.forward() ? intent.pitch() : PegasusTuning.CLIMB_PITCH,
+                    PegasusTuning.CLIMB_PITCH_LIMIT, PegasusTuning.CLIMB_PITCH);
         } else if (intent.forward()) {
-            targetPitch = intent.pitch();
+            targetPitch = Math.max(intent.pitch(), PegasusTuning.CRUISE_PITCH_LIMIT);
         } else {
             targetPitch = PegasusTuning.GLIDE_PITCH;
         }
-        if (!hasStamina) {
+        if (!powered) {
             targetPitch = Math.max(targetPitch, PegasusTuning.FORCED_GLIDE_MIN_PITCH);
         }
-        float pitchRate = stalled ? PegasusTuning.STALLED_PITCH_RATE : PegasusTuning.PITCH_RATE;
+        float pitchRate;
+        if (stalled) {
+            pitchRate = PegasusTuning.STALLED_PITCH_RATE;
+        } else if (!powered && this.flightPitch < targetPitch) {
+            pitchRate = PegasusTuning.POWER_LOSS_PITCH_RATE;
+        } else {
+            pitchRate = PegasusTuning.PITCH_RATE;
+        }
         this.flightPitch = approach(this.flightPitch, targetPitch, pitchRate);
 
         float targetHeading = rider != null ? rider.getYRot() : this.heading;
@@ -593,8 +616,8 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         float pitchRad = this.flightPitch * Mth.DEG_TO_RAD;
         float taper = Math.max(0.0F, 1.0F - this.airspeed / PegasusTuning.CRUISE_MAX_SPEED);
         float thrust = 0.0F;
-        if (!stalled && hasStamina) {
-            if (intent.forward()) {
+        if (!stalled && powered) {
+            if ((intent.forward() || intent.climb()) && this.flightPitch <= PegasusTuning.POWERED_MAX_PITCH) {
                 thrust += PegasusTuning.THRUST * taper;
             }
             if (intent.climb()) {
@@ -604,7 +627,7 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         float delta = PegasusTuning.GRAVITY_EXCHANGE * Mth.sin(pitchRad) + thrust - PegasusTuning.DRAG * this.airspeed * this.airspeed;
         this.airspeed = Mth.clamp(this.airspeed + delta, 0.0F, PegasusTuning.DIVE_MAX_SPEED);
 
-        if (!stalled && this.flightPitch < PegasusTuning.STALL_PITCH && this.airspeed < PegasusTuning.STALL_SPEED) {
+        if (!stalled && delta < 0.0F && this.flightPitch < PegasusTuning.STALL_PITCH && this.airspeed < PegasusTuning.STALL_SPEED) {
             this.stallTicks = PegasusTuning.STALL_TICKS;
             this.reportFlight(PegasusFlightPayload.Kind.STALL, this.airspeed);
         } else if (stalled) {
@@ -694,8 +717,8 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
 
         if (this.flying) {
             float cost;
-            boolean climbing = intent.climb() && this.stamina > 0.0F;
-            boolean powered = intent.forward() && this.stamina > 0.0F && this.visualPitch <= PegasusTuning.FORCED_GLIDE_MIN_PITCH;
+            boolean climbing = intent.climb() && !this.exhausted;
+            boolean powered = intent.forward() && !this.exhausted && this.visualPitch <= PegasusTuning.POWERED_MAX_PITCH;
             if (climbing) {
                 cost = PegasusTuning.CLIMB_COST;
             } else if (powered) {
@@ -722,14 +745,12 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
                 }
             }
 
+            Mode target = climbing ? Mode.CLIMB : powered ? Mode.CRUISE : Mode.GLIDE;
             if (this.modeTimer > 0) {
                 this.modeTimer--;
-            } else if (climbing) {
-                this.setMode(Mode.CLIMB);
-            } else if (powered) {
-                this.setMode(Mode.CRUISE);
-            } else {
-                this.setMode(Mode.GLIDE);
+            } else if (this.getMode() != target) {
+                this.setMode(target);
+                this.modeTimer = PegasusTuning.MODE_HOLD_TICKS;
             }
         } else {
             if (this.onGround()) {
@@ -741,6 +762,8 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
                 this.setMode(Mode.GROUND);
             }
         }
+        this.setExhausted(this.stamina <= 0.0F
+                || (this.exhausted && this.stamina < PegasusTuning.EXHAUSTED_RECOVERY));
         this.entityData.set(DATA_STAMINA, Math.round(this.stamina * STAMINA_SYNC_STEPS) / STAMINA_SYNC_STEPS);
 
         int interval = switch (this.getMode()) {
@@ -834,7 +857,9 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         this.flying = input.getBooleanOr("Flying", false);
         this.everFlewWithRider = input.getBooleanOr("EverFlewWithRider", false);
         this.pendingOwner = input.read("PendingOwner", UUIDUtil.CODEC).orElse(null);
+        this.exhausted = this.stamina <= 0.0F;
         this.entityData.set(DATA_STAMINA, this.stamina);
         this.entityData.set(DATA_FLYING, this.flying);
+        this.entityData.set(DATA_EXHAUSTED, this.exhausted);
     }
 }

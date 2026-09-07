@@ -40,6 +40,8 @@ public final class PegasusTuning {
 
     public static final float TAKEOFF_MIN_STAMINA = 0.1F;
 
+    public static final float EXHAUSTED_RECOVERY = 0.1F;
+
     public static final float SADDLE_FEED_STAMINA = 0.1F;
 
     public static final int TAKEOFF_CHARGE_TICKS = 8;
@@ -53,14 +55,21 @@ public final class PegasusTuning {
 
     public static final float MAX_PITCH = 60.0F;
 
-    public static final float CLIMB_PITCH = -25.0F;
+    public static final float CLIMB_PITCH = -20.0F;
+
+    public static final float CLIMB_PITCH_LIMIT = -25.0F;
+
+    public static final float CRUISE_PITCH_LIMIT = -10.0F;
 
     public static final float GLIDE_PITCH = 8.0F;
 
     public static final float FORCED_GLIDE_MIN_PITCH = 5.0F;
 
+    public static final float POWERED_MAX_PITCH = 6.0F;
+
     public static final float PITCH_RATE = 4.0F;
-    public static final float STALLED_PITCH_RATE = 1.2F;
+    public static final float STALLED_PITCH_RATE = 3.0F;
+    public static final float POWER_LOSS_PITCH_RATE = 12.0F;
 
     public static final float TURN_RATE = 6.0F;
     public static final float TURN_SPEED_SCALE = 0.6F;
@@ -111,6 +120,8 @@ public final class PegasusTuning {
     public static final float ROLL_SMOOTHING = 0.15F;
 
     public static final float BODY_PITCH_FACTOR = 0.6F;
+
+    public static final int MODE_HOLD_TICKS = 5;
 
     public static final int TAKEOFF_ANIMATION_TICKS = 12;
     public static final int LANDING_ANIMATION_TICKS = 12;
