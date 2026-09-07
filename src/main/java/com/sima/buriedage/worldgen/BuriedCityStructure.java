@@ -46,10 +46,11 @@ public class BuriedCityStructure extends Structure {
     };
 
     private static final int COLUMN_GAP = 2;
-    private static final int COVER = 2;
+    private static final int COVER = 3;
     private static final int SAMPLE_STEP = 8;
-    private static final int MAX_SINK = 6;
+    private static final int MAX_SINK = 16;
     private static final int BURIAL_MARGIN = 5;
+    private static final int WATER_TOLERANCE = 1;
 
     private final JigsawStructure jigsaw;
 
@@ -60,7 +61,7 @@ public class BuriedCityStructure extends Structure {
 
     @Override
     protected Optional<Structure.GenerationStub> findGenerationPoint(Structure.GenerationContext context) {
-        return this.jigsaw.findValidGenerationPoint(context).map(stub -> {
+        return this.jigsaw.findValidGenerationPoint(context).flatMap(stub -> {
             List<BuriedCityPiece> pieces = new ArrayList<>();
             for (StructurePiece piece : stub.getPiecesBuilder().build().pieces()) {
                 if (piece instanceof PoolElementStructurePiece pool) {
@@ -68,13 +69,22 @@ public class BuriedCityStructure extends Structure {
                 }
             }
 
-            settle(context, pieces);
-            return new Structure.GenerationStub(stub.position(), builder -> pieces.forEach(builder::addPiece));
+            if (!settle(context, pieces)) {
+                return Optional.empty();
+            }
+
+            return Optional.of(new Structure.GenerationStub(stub.position(), builder -> pieces.forEach(builder::addPiece)));
         });
     }
 
-    private static void settle(Structure.GenerationContext context, List<BuriedCityPiece> pieces) {
+    private static boolean settle(Structure.GenerationContext context, List<BuriedCityPiece> pieces) {
+        long started = System.nanoTime();
         Map<Long, Integer> ground = new HashMap<>();
+        if (standsInWater(context, ground, pieces)) {
+            TheBuriedAge.LOGGER.debug("[city] water here, {} columns sampled in {} ms", ground.size(), (System.nanoTime() - started) / 1000000L);
+            return false;
+        }
+
         int sink = 0;
         BuriedCityPiece hint = null;
         BuriedCityPiece agora = null;
@@ -93,14 +103,17 @@ public class BuriedCityStructure extends Structure {
 
             BoundingBox box = piece.getBoundingBox();
             int lowestOver = lowestGround(context, ground, box);
-            int lowestAround = lowestGround(context, ground, box.inflatedBy(BURIAL_MARGIN, 0, BURIAL_MARGIN));
             sink = Math.max(sink, box.maxY() + COVER - lowestOver);
-            sink = Math.max(sink, box.minY() + BuriedCityPiece.BURIAL_REACH - lowestAround);
+            sink = Math.max(sink, box.minY() + BuriedCityPiece.BURIAL_REACH - lowestOver);
+        }
+
+        if (sink > MAX_SINK) {
+            TheBuriedAge.LOGGER.debug("[city] the ground asks for {} blocks, more than {}, so no city ({} columns, {} ms)", sink, MAX_SINK, ground.size(), (System.nanoTime() - started) / 1000000L);
+            return false;
         }
 
         if (sink > 0) {
-            TheBuriedAge.LOGGER.debug("[city] terrain asks for {} blocks more depth, sinking {}", sink, Math.min(sink, MAX_SINK));
-            sink = Math.min(sink, MAX_SINK);
+            TheBuriedAge.LOGGER.debug("[city] sinking the city {} blocks ({} columns, {} ms)", sink, ground.size(), (System.nanoTime() - started) / 1000000L);
             for (BuriedCityPiece piece : pieces) {
                 if (piece.isRigid()) {
                     piece.move(0, -sink, 0);
@@ -123,23 +136,71 @@ public class BuriedCityStructure extends Structure {
             BoundingBox old = hint.getBoundingBox();
             hint.move(x - old.minX(), top + 1 - old.minY(), z - old.minZ());
         }
+
+        return true;
+    }
+
+    /**
+     * A lake over the city drowns the whole idea: the pieces would sit in the water rather than
+     * under soil, and the burial pass would pile a rectangular island onto the surface. Any real
+     * water over the footprint sends the city somewhere else.
+     */
+    private static boolean standsInWater(Structure.GenerationContext context, Map<Long, Integer> ground,
+                                         List<BuriedCityPiece> pieces) {
+        BoundingBox footprint = null;
+        for (BuriedCityPiece piece : pieces) {
+            if (piece.isRigid()) {
+                BoundingBox box = piece.getBoundingBox();
+                footprint = footprint == null ? box : BoundingBox.encapsulatingBoxes(List.of(footprint, box)).orElse(box);
+            }
+        }
+
+        if (footprint == null) {
+            return false;
+        }
+
+        BoundingBox around = footprint.inflatedBy(BURIAL_MARGIN, 0, BURIAL_MARGIN);
+        for (int x = around.minX(); x <= around.maxX(); x += SAMPLE_STEP) {
+            for (int z = around.minZ(); z <= around.maxZ(); z += SAMPLE_STEP) {
+                int floor = groundAt(context, ground, x, z);
+                int surface = context.chunkGenerator().getFirstOccupiedHeight(x, z,
+                        Heightmap.Types.WORLD_SURFACE_WG, context.heightAccessor(), context.randomState());
+                if (surface - floor > WATER_TOLERANCE) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static int groundAt(Structure.GenerationContext context, Map<Long, Integer> cache, int x, int z) {
+        return cache.computeIfAbsent(BlockPos.asLong(x, 0, z), key -> context.chunkGenerator()
+                .getFirstOccupiedHeight(x, z, Heightmap.Types.OCEAN_FLOOR_WG, context.heightAccessor(), context.randomState()));
     }
 
     private static boolean isTemplate(PoolElementStructurePiece piece, Identifier template) {
         return piece.getElement() instanceof SinglePoolElement single && single.getTemplateLocation().equals(template);
     }
 
+    /**
+     * The lowest ground the box actually stands over. Only columns inside the box count: a ravine a
+     * few blocks past its corner says nothing about whether this piece is covered, and letting one
+     * in used to drag the whole city down after it.
+     */
     private static int lowestGround(Structure.GenerationContext context, Map<Long, Integer> cache, BoundingBox box) {
         int lowest = Integer.MAX_VALUE;
-        int firstX = Math.floorDiv(box.minX(), SAMPLE_STEP) * SAMPLE_STEP;
-        int firstZ = Math.floorDiv(box.minZ(), SAMPLE_STEP) * SAMPLE_STEP;
-        for (int x = firstX; x <= box.maxX() + SAMPLE_STEP - 1; x += SAMPLE_STEP) {
-            for (int z = firstZ; z <= box.maxZ() + SAMPLE_STEP - 1; z += SAMPLE_STEP) {
-                int sx = x;
-                int sz = z;
-                int height = cache.computeIfAbsent(BlockPos.asLong(sx, 0, sz), key -> context.chunkGenerator()
-                        .getFirstOccupiedHeight(sx, sz, Heightmap.Types.OCEAN_FLOOR_WG, context.heightAccessor(), context.randomState()));
-                lowest = Math.min(lowest, height);
+        for (int x : new int[] { box.minX(), box.maxX() }) {
+            for (int z : new int[] { box.minZ(), box.maxZ() }) {
+                lowest = Math.min(lowest, groundAt(context, cache, x, z));
+            }
+        }
+
+        int firstX = Math.floorDiv(box.minX() + SAMPLE_STEP - 1, SAMPLE_STEP) * SAMPLE_STEP;
+        int firstZ = Math.floorDiv(box.minZ() + SAMPLE_STEP - 1, SAMPLE_STEP) * SAMPLE_STEP;
+        for (int x = firstX; x <= box.maxX(); x += SAMPLE_STEP) {
+            for (int z = firstZ; z <= box.maxZ(); z += SAMPLE_STEP) {
+                lowest = Math.min(lowest, groundAt(context, cache, x, z));
             }
         }
 
