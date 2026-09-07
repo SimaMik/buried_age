@@ -8,16 +8,18 @@
         "processors": "buried_age:city_archaeology",
         "projection": "rigid"
       },
-      "weight": 3
+      "weight": 1
     },
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "buried_age:city/terminator_rich",
-        "processors": { "processors": [] },
+        "processors": {
+          "processors": []
+        },
         "projection": "rigid"
       },
-      "weight": 7
+      "weight": 9
     }
   ]
 }
