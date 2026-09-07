@@ -9,6 +9,7 @@ public class BuildCityTemplates {
     static final String CAVITY = "buried_age:cavity_marker";
     static final Set<String> KEEP = Set.of("minecraft:jigsaw", "minecraft:chest", "minecraft:decorated_pot",
             "buried_age:hephaestus_forge", "buried_age:cella_marker", "buried_age:building_marker");
+    static final Set<String> OPEN = Set.of("temple.nbt", "villa.nbt", "theatre.nbt", "workshop.nbt");
 
     sealed interface Tag permits TByte, TShort, TInt, TLong, TFloat, TDouble, TBytes, TStr, TList, TComp, TInts, TLongs {}
     record TByte(byte v) implements Tag {}
@@ -320,7 +321,7 @@ public class BuildCityTemplates {
             int above = t.stateAt(x, 1, z);
             String aboveName = above < 0 ? null : t.palette.get(above);
             if (aboveName == null) continue;
-            if (CAVITY.equals(aboveName) || KEEP.contains(aboveName)) {
+            if (CAVITY.equals(aboveName) || KEEP.contains(aboveName) || partial(t, above)) {
                 t.set(x, 0, z, floor);
             } else {
                 t.setState(x, 0, z, above);
@@ -334,13 +335,28 @@ public class BuildCityTemplates {
                 file, cavity0, cavity1, moved, filled, floor.replace("minecraft:", ""));
     }
 
+    static boolean rubble(String n) {
+        return n.equals("minecraft:gravel") || n.equals("minecraft:dirt") || n.equals("minecraft:coarse_dirt");
+    }
+
+    static boolean partial(Tpl t, int state) {
+        String n = t.palette.get(state);
+        Tag props = get(t.paletteEntries.get(state), "Properties");
+        if (n.contains("_slab")) return "bottom".equals(str(get(props, "type")));
+        if (n.contains("_stairs")) return "bottom".equals(str(get(props, "half")));
+        return n.equals("minecraft:air") || n.contains("_wall") || n.contains("_fence") || n.contains("_pane")
+                || n.contains("_door") || n.contains("_trapdoor") || n.contains("torch") || n.contains("lantern")
+                || n.contains("carpet") || n.contains("_pot") || n.contains("_bars") || n.contains("_head");
+    }
+
     static String floorMaterial(Tpl t) {
         Map<String, Integer> count = new HashMap<>();
         for (int x = 0; x < t.sx; x++) for (int z = 0; z < t.sz; z++) {
-            String n = t.name(x, 0, z);
-            if (n == null || CAVITY.equals(n) || KEEP.contains(n)) continue;
-            if (n.equals("minecraft:gravel") || n.equals("minecraft:dirt") || n.equals("minecraft:coarse_dirt")) continue;
-            if (n.contains("_slab") || n.contains("_stairs") || n.contains("_wall") || n.contains("_fence")) continue;
+            int state = t.stateAt(x, 0, z);
+            if (state < 0) continue;
+            String n = t.palette.get(state);
+            if (CAVITY.equals(n) || KEEP.contains(n) || rubble(n) || partial(t, state)) continue;
+            if (n.contains("_slab") || n.contains("_stairs")) continue;
             count.merge(n, 1, Integer::sum);
         }
 
@@ -393,9 +409,23 @@ public class BuildCityTemplates {
                 file, blockName.replace("buried_age:", ""), facing, touched, touched == 1 ? "" : "s");
     }
 
-    static void carve(String file) throws IOException {
-        Path p = DIR.resolve(file);
-        Tpl t = new Tpl(load(p));
+    record Passage(int[] jigsaw, int dx, int dz, List<int[]> cells, int entrance, int room) {
+        Set<Long> keys() {
+            Set<Long> keys = new HashSet<>();
+            for (int[] c : cells) {
+                keys.add(Tpl.key(c[0], c[1], c[2]));
+                keys.add(Tpl.key(c[0], c[1] + 1, c[2]));
+            }
+            return keys;
+        }
+    }
+
+    static boolean built(Tpl t, int x, int y, int z) {
+        String n = t.inside(x, y, z) ? t.name(x, y, z) : null;
+        return n != null && !rubble(n) && !CAVITY.equals(n) && !"minecraft:air".equals(n) && !KEEP.contains(n);
+    }
+
+    static Passage carve(Tpl t, String file) {
         Tag jig = null;
         for (Tag j : t.jigsaws()) {
             String nm = str(get(j, "nbt", "name"));
@@ -403,7 +433,7 @@ public class BuildCityTemplates {
         }
         if (jig == null) {
             System.out.println("  " + file + ": no building jigsaw, skipped");
-            return;
+            return null;
         }
 
         int[] jp = pos(jig);
@@ -412,9 +442,19 @@ public class BuildCityTemplates {
         int dz = -f[2];
         int changed = 0;
         StringBuilder trace = new StringBuilder();
+        List<int[]> cells = new ArrayList<>();
+        int entrance = -1;
+        int room = -1;
 
-        // Without a bound a building whose ground floor is completely collapsed, like the rich
-        // house, would be tunnelled end to end. Two thirds of the way in is enough to be inside.
+        cells.add(new int[] { jp[0], jp[1], jp[2] });
+        if (t.inside(jp[0], jp[1] + 1, jp[2])) {
+            String head = t.name(jp[0], jp[1] + 1, jp[2]);
+            if (head == null || !KEEP.contains(head)) {
+                t.set(jp[0], jp[1] + 1, jp[2], CAVITY);
+                changed++;
+            }
+        }
+
         int reach = Math.min(16, (2 * (dx != 0 ? t.sx : t.sz)) / 3);
         int extra = -1;
         for (int step = 1; step <= reach; step++) {
@@ -423,10 +463,30 @@ public class BuildCityTemplates {
             int z = jp[2] + dz * step;
             if (!t.inside(x, y, z)) break;
             String at = t.name(x, y, z);
+            String head = t.inside(x, y + 1, z) ? t.name(x, y + 1, z) : null;
+            String overHead = t.inside(x, y + 2, z) ? t.name(x, y + 2, z) : null;
+            boolean headFixed = head != null && !CAVITY.equals(head) && (KEEP.contains(head)
+                    || (overHead != null && KEEP.contains(overHead) && !"minecraft:jigsaw".equals(overHead)));
+            if (headFixed) {
+                trace.append(" |stop before ").append(step).append(':').append(head.replace("minecraft:", ""));
+                break;
+            }
+
             boolean open = CAVITY.equals(at) && t.inside(x, y + 1, z) && CAVITY.equals(t.name(x, y + 1, z));
             if (open && extra < 0 && sideOpen(t, x, y, z, dx, dz)) {
                 extra = 0;
+                room = step;
                 trace.append(" <-room");
+            }
+
+            boolean wallCell = built(t, x, y, z) || built(t, x, y + 1, z);
+            boolean wallSide = built(t, x + dz, y, z + dx) || built(t, x - dz, y, z - dx)
+                    || built(t, x + dz, y + 1, z + dx) || built(t, x - dz, y + 1, z - dx);
+            if (room < 0 && entrance < 0 && (wallCell || wallSide)) {
+                entrance = step;
+                trace.append(" <-wall");
+            } else if (room < 0 && entrance == step - 1 && wallCell) {
+                entrance = step;
             }
 
             for (int up = 0; up <= 1; up++) {
@@ -441,6 +501,7 @@ public class BuildCityTemplates {
                 changed++;
             }
 
+            cells.add(new int[] { x, y, z });
             if (extra < 0) {
                 trace.append(' ').append(step).append(':').append(at == null ? "void" : at.replace("minecraft:", ""));
             } else if (extra-- == 0) {
@@ -448,9 +509,59 @@ public class BuildCityTemplates {
             }
         }
 
-        save(t.root, p);
-        System.out.printf("  %-18s jigsaw %d,%d,%d dir %d,%d -> carved %d cells;%s%n",
-                file, jp[0], jp[1], jp[2], dx, dz, changed, trace);
+        System.out.printf("  %-18s jigsaw %d,%d,%d dir %d,%d -> carved %d cells, wall at step %d, room at step %d;%s%n",
+                file, jp[0], jp[1], jp[2], dx, dz, changed, entrance, room, trace);
+        return new Passage(jp, dx, dz, cells, entrance, room);
+    }
+
+    static String paving(int x, int z) {
+        int h = Math.floorMod(x * 73856093 ^ z * 19349663 ^ (x + z) * 83492791, 6);
+        return h < 3 ? "minecraft:stone_bricks" : h < 5 ? "minecraft:cracked_stone_bricks" : "minecraft:andesite";
+    }
+
+    static String rubbleMix(int x, int y, int z) {
+        int h = Math.floorMod(x * 73856093 ^ y * 83492791 ^ z * 19349663, 4);
+        return h < 2 ? "minecraft:gravel" : h == 2 ? "minecraft:dirt" : "minecraft:coarse_dirt";
+    }
+
+    static void pave(Tpl t, Passage pass, String file) {
+        if (pass == null) return;
+        int last = pass.entrance() >= 0 ? pass.entrance()
+                : pass.room() >= 0 ? pass.room() - 1 : Math.min(2, pass.cells().size());
+        last = Math.min(last, pass.cells().size() - 1);
+        int paved = 0;
+        for (int step = 0; step <= last; step++) {
+            int x = pass.jigsaw()[0] + pass.dx() * step;
+            int z = pass.jigsaw()[2] + pass.dz() * step;
+            int y = pass.jigsaw()[1] - 1;
+            if (!t.inside(x, y, z)) continue;
+            String cur = t.name(x, y, z);
+            if (cur != null && KEEP.contains(cur)) continue;
+            t.set(x, y, z, paving(x, z));
+            paved++;
+        }
+
+        System.out.printf("  %-18s paved %d approach cells (steps 0..%d)%n", file, paved, last);
+    }
+
+    static void bury(Tpl t, Passage pass, String file) {
+        if (pass != null && pass.entrance() >= 0 && pass.cells().size() > pass.entrance() + 2) {
+            pass = new Passage(pass.jigsaw(), pass.dx(), pass.dz(),
+                    new ArrayList<>(pass.cells().subList(0, pass.entrance() + 2)), pass.entrance(), pass.room());
+        }
+
+        Set<Long> keep = pass == null ? Set.of() : pass.keys();
+        int filled = 0;
+        for (Tag b : new ArrayList<>(t.blocks)) {
+            if (!CAVITY.equals(t.palette.get(num(get(b, "state"))))) continue;
+            int[] p = pos(b);
+            if (keep.contains(Tpl.key(p[0], p[1], p[2]))) continue;
+            boolean overPassage = keep.contains(Tpl.key(p[0], p[1] - 1, p[2]));
+            t.set(p[0], p[1], p[2], overPassage ? "minecraft:dirt" : rubbleMix(p[0], p[1], p[2]));
+            filled++;
+        }
+
+        System.out.printf("  %-18s buried: %d cavity cells filled with rubble, %d passage cells kept%n", file, filled, keep.size());
     }
 
     /** A corridor we cut ourselves is one cell wide; a real room is open to at least one side. */
@@ -513,14 +624,24 @@ public class BuildCityTemplates {
         System.out.println("== theatre: connector onto the long side, so the rows face the street ==");
         moveJigsaw("theatre.nbt", 7, 1, 0, 0, 1, 9, "west_up");
 
+        System.out.println("== rich house: connector onto the south face, the house turns a quarter clockwise to the street ==");
+        moveJigsaw("house_rich.nbt", 0, 1, 8, 8, 1, 17, "south_up");
+
         System.out.println("== temple: the forge faces the cella entrance ==");
         faceBlock("temple.nbt", "buried_age:hephaestus_forge", "west");
 
         System.out.println("== lift the buildings whose floor sits below street level ==");
         for (String f : buildings) raiseIfLow(f);
 
-        System.out.println("== carve approaches ==");
-        for (String f : buildings) carve(f);
+        System.out.println("== carve and pave approaches, bury the interiors outside OPEN ==");
+        for (String f : buildings) {
+            Path p = DIR.resolve(f);
+            Tpl t = new Tpl(load(p));
+            Passage pass = carve(t, f);
+            pave(t, pass, f);
+            if (!OPEN.contains(f)) bury(t, pass, f);
+            save(t.root, p);
+        }
 
         System.out.println("== district streets ==");
         for (String d : new String[] { "rich", "medium", "poor" }) {
