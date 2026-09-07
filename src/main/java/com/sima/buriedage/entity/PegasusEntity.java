@@ -53,25 +53,16 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-/**
- * A horse that flies. On the ground it is a vanilla horse in everything but jumping: the jump key
- * is the wing key. In the air the rider's client integrates the flight model (it is the authority
- * for a ridden mount, exactly as for a horse) and tells the server about takeoffs, landings and
- * crashes; the server owns stamina, the animation mode, sounds and the advancements.
- *
- * <p>All numbers live in {@link PegasusTuning}.
- */
 public class PegasusEntity extends AbstractHorse implements GeoEntity {
     private static final EntityDataAccessor<Boolean> DATA_FLYING = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Float> DATA_STAMINA = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Byte> DATA_MODE = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Float> DATA_PITCH = SynchedEntityData.defineId(PegasusEntity.class, EntityDataSerializers.FLOAT);
-    /** Fewer ticks than this between two flight packets from the rider and the later one is dropped. */
+
     private static final int REMOTE_EVENT_INTERVAL = 5;
-    /** Synced stamina is rounded to this many steps and the synced pitch to whole degrees, so the metadata packet is not sent every tick. */
+
     private static final float STAMINA_SYNC_STEPS = 200.0F;
 
-    /** What the wings are doing, for animation and sound. Written by the server, read everywhere. */
     public enum Mode {
         GROUND, TAKEOFF, CLIMB, CRUISE, GLIDE, STALL, LANDING;
 
@@ -86,12 +77,14 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
     private static final RawAnimation RUN = RawAnimation.begin().thenLoop("Running_Animation");
     private static final RawAnimation FLY = RawAnimation.begin().thenLoop("Flying_Animation");
     private static final RawAnimation GLIDE = RawAnimation.begin().thenLoop("Gliding_Animation");
-    /** Walk-animation speed above which the legs are read as a gallop. */
+
     private static final float GALLOP_WALK_SPEED = 0.6F;
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
 
     private boolean flying;
+    private boolean heldReins;
+    private boolean toldIcarus;
     private float airspeed;
     private float flightPitch;
     private float heading;
@@ -128,8 +121,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         return createBaseHorseAttributes();
     }
 
-    // ---------------------------------------------------------------- synced data
-
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder entityData) {
         super.defineSynchedData(entityData);
@@ -154,7 +145,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         return this.flying;
     }
 
-    /** 0..1, the jump bar. */
     public float getStamina() {
         return this.level().isClientSide() ? this.entityData.get(DATA_STAMINA) : this.stamina;
     }
@@ -175,17 +165,13 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         return this.airspeed;
     }
 
-    /** Bank angle for the renderer, degrees. */
     public float getRoll() {
         return this.roll;
     }
 
-    /** Flight-path pitch for the renderer, degrees, positive nose down. */
     public float getVisualPitch() {
         return this.visualPitch;
     }
-
-    // ---------------------------------------------------------------- birth and breeding
 
     @Override
     protected void randomizeAttributes(RandomSource random) {
@@ -224,7 +210,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         foal.getAttribute(Attributes.JUMP_STRENGTH).setBaseValue(generateJumpStrength(this.random::nextDouble));
     }
 
-    /** Vanilla's rule for horse foals, with the pegasus ranges: parents' average plus a spread. */
     private void inherit(AgeableMob partner, AbstractHorse foal, net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> attribute, double min, double max) {
         double a = Mth.clamp(this.getAttributeBaseValue(attribute), min, max);
         double b = Mth.clamp(partner.getAttributeBaseValue(attribute), min, max);
@@ -240,7 +225,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         foal.getAttribute(attribute).setBaseValue(value);
     }
 
-    /** The player who placed the egg was not online when it hatched: claim them when they next appear. */
     public void setPendingOwner(@Nullable UUID owner) {
         this.pendingOwner = owner;
     }
@@ -249,8 +233,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         var reference = this.getOwnerReference();
         return reference == null ? null : reference.getEntity(this.level(), LivingEntity.class);
     }
-
-    // ---------------------------------------------------------------- food and interaction
 
     @Override
     public boolean isFood(ItemStack stack) {
@@ -340,13 +322,15 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         return super.mobInteract(player, hand);
     }
 
-    /** No horse armor: the artist's model has nothing to stretch it over, so the slot stays closed until a pegasus armor of its own exists. */
+    @Override
+    public boolean isFlyingVehicle() {
+        return true;
+    }
+
     @Override
     public boolean canUseSlot(EquipmentSlot slot) {
         return slot != EquipmentSlot.BODY && super.canUseSlot(slot);
     }
-
-    // ---------------------------------------------------------------- sounds
 
     @Override
     protected SoundEvent getAmbientSound() {
@@ -376,8 +360,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
     @Override
     protected void playJumpSound() {
     }
-
-    // ---------------------------------------------------------------- the jump key is the wing key
 
     @Override
     public boolean canJump() {
@@ -411,7 +393,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         return rider.level().isClientSide() ? PegasusClientBridge.input(rider) : Input.EMPTY;
     }
 
-    /** What the rider is asking for this tick. Computed the same way on both sides. */
     private record Intent(boolean forward, boolean climb, float pitch) {
         static final Intent NONE = new Intent(false, false, PegasusTuning.GLIDE_PITCH);
 
@@ -425,8 +406,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
     private @Nullable Player rider() {
         return this.getControllingPassenger() instanceof Player player ? player : null;
     }
-
-    // ---------------------------------------------------------------- riding
 
     @Override
     protected void tickRidden(Player controller, Vec3 riddenInput) {
@@ -493,7 +472,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         this.reportFlight(PegasusFlightPayload.Kind.CRASH, speed);
     }
 
-    /** The rider's client tells the server; the server applies the same change to itself directly. */
     private void reportFlight(PegasusFlightPayload.Kind kind, float speed) {
         if (this.level().isClientSide()) {
             PegasusClientBridge.send(new PegasusFlightPayload(this.getId(), kind, speed));
@@ -502,14 +480,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         }
     }
 
-    /**
-     * Server side. Everything a flight event changes that other players must see or that costs
-     * health. A packet from a rider is trusted only as far as it can be checked: the sender must
-     * be the one steering, the speed is clamped to what the flight model can reach, the event has
-     * to fit the state the server knows, and takeoffs, crashes and stalls are ignored when they
-     * arrive more often than the model could produce them. Landings skip the rate limit so a
-     * stall right before touchdown can never leave the server thinking the mount is still up.
-     */
     public void applyFlightEvent(PegasusFlightPayload.Kind kind, float speed, @Nullable ServerPlayer rider) {
         if (!(this.level() instanceof ServerLevel level)) {
             return;
@@ -582,8 +552,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         }
     }
 
-    // ---------------------------------------------------------------- flight model
-
     @Override
     public void travel(Vec3 input) {
         if (this.flying && PegasusTuning.FLIGHT_ENABLED && this.isLocalInstanceAuthoritative()) {
@@ -593,12 +561,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         super.travel(input);
     }
 
-    /**
-     * One tick of flight on the authoritative side. The core is an exchange between height and
-     * airspeed: the nose angle decides how much gravity feeds into speed, wings add a little thrust,
-     * drag takes a share proportional to speed squared. Direction changes are rate-limited and
-     * get slower with speed; a nose-up attitude without the speed to carry it stalls.
-     */
     private void flyTick() {
         Player rider = this.rider();
         Intent intent = rider != null ? Intent.of(rider) : Intent.NONE;
@@ -690,8 +652,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         return Math.abs(diff) <= rate ? target : current + Math.signum(diff) * rate;
     }
 
-    // ---------------------------------------------------------------- per tick
-
     @Override
     public void tick() {
         Vec3 observed = this.position().subtract(this.xo, this.yo, this.zo);
@@ -746,9 +706,20 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
             this.stamina = Mth.clamp(this.stamina - cost, 0.0F, 1.0F);
 
             this.distanceFlown += observed.horizontalDistance();
-            if (rider instanceof ServerPlayer serverRider && this.distanceFlown >= PegasusTuning.ICARUS_DISTANCE) {
-                ModTriggers.PEGASUS.get().trigger(serverRider, "icarus");
-                this.distanceFlown = 0.0;
+            if (rider instanceof ServerPlayer serverRider) {
+                if (this.distanceFlown >= PegasusTuning.BELLEROPHON_DISTANCE) {
+                    ModTriggers.PEGASUS.get().trigger(serverRider, "bellerophon");
+                    this.distanceFlown = 0.0;
+                }
+
+                if (this.getY() >= PegasusTuning.ICARUS_ALTITUDE) {
+                    if (!this.toldIcarus) {
+                        this.toldIcarus = true;
+                        ModTriggers.PEGASUS.get().trigger(serverRider, "icarus");
+                    }
+                } else if (this.getY() < PegasusTuning.ICARUS_ALTITUDE - 100.0) {
+                    this.toldIcarus = false;
+                }
             }
 
             if (this.modeTimer > 0) {
@@ -786,6 +757,12 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
     }
 
     private void clientTick() {
+        boolean reins = this.isLocalInstanceAuthoritative();
+        if (reins && !this.heldReins) {
+            this.flying = this.entityData.get(DATA_FLYING);
+        }
+
+        this.heldReins = reins;
         Mode mode = this.getMode();
         float rate = Mth.wrapDegrees(this.getYRot() - this.yRotO);
         this.yawRate = this.yawRate + (rate - this.yawRate) * 0.3F;
@@ -799,9 +776,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         }
     }
 
-    // ---------------------------------------------------------------- animation (GeckoLib)
-
-    /** One controller: the server-synced flight mode picks the wing animation, the walk animation speed picks the gait on the ground. */
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>("pegasus", 5, test -> switch (this.getMode()) {
@@ -822,9 +796,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         return this.geoCache;
     }
 
-    // ---------------------------------------------------------------- dismounting and death
-
-    /** Shift in the air is the vanilla dismount; the rider just gets a soft landing out of it. */
     @Override
     protected void removePassenger(Entity passenger) {
         super.removePassenger(passenger);
@@ -844,8 +815,6 @@ public class PegasusEntity extends AbstractHorse implements GeoEntity {
         }
         super.die(source);
     }
-
-    // ---------------------------------------------------------------- persistence
 
     @Override
     protected void addAdditionalSaveData(ValueOutput output) {

@@ -1,0 +1,19 @@
+{
+  "parent": "buried_age:first_flight",
+  "display": {
+    "icon": { "id": "minecraft:feather" },
+    "title": { "translate": "advancements.buried_age.bellerophon.title" },
+    "description": { "translate": "advancements.buried_age.bellerophon.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "flew_far": {
+      "trigger": "buried_age:pegasus",
+      "conditions": { "event": "bellerophon" }
+    }
+  },
+  "requirements": [ [ "flew_far" ] ]
+}

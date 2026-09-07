@@ -131,8 +131,10 @@
   "advancements.buried_age.winged.description": "Вылупить пегаса",
   "advancements.buried_age.first_flight.title": "Первый полёт",
   "advancements.buried_age.first_flight.description": "Взлететь верхом на пегасе",
+  "advancements.buried_age.bellerophon.title": "Беллерофонт",
+  "advancements.buried_age.bellerophon.description": "Пролететь 1000 блоков, не коснувшись земли",
   "advancements.buried_age.icarus.title": "Икар",
-  "advancements.buried_age.icarus.description": "Пролететь 1000 блоков, не коснувшись земли",
+  "advancements.buried_age.icarus.description": "Подняться на пегасе до высоты 2000",
 
   "filled_map.buried_age.buried_city": "Карта погребённого города"
 }

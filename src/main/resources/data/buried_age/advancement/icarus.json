@@ -1,7 +1,7 @@
 {
-  "parent": "buried_age:first_flight",
+  "parent": "buried_age:bellerophon",
   "display": {
-    "icon": { "id": "minecraft:feather" },
+    "icon": { "id": "minecraft:honeycomb" },
     "title": { "translate": "advancements.buried_age.icarus.title" },
     "description": { "translate": "advancements.buried_age.icarus.description" },
     "frame": "challenge",
@@ -10,10 +10,10 @@
     "hidden": true
   },
   "criteria": {
-    "flew_far": {
+    "flew_high": {
       "trigger": "buried_age:pegasus",
       "conditions": { "event": "icarus" }
     }
   },
-  "requirements": [ [ "flew_far" ] ]
+  "requirements": [ [ "flew_high" ] ]
 }
