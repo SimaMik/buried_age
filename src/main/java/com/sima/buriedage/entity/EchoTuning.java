@@ -6,16 +6,16 @@ import net.minecraft.util.RandomSource;
 public final class EchoTuning {
     public static final boolean AUTO_SPAWN_ENABLED = true;
 
-    public static final int COOLDOWN_MIN = 50 * 20;
-    public static final int COOLDOWN_MAX = 90 * 20;
+    public static final int COOLDOWN_MIN = 25 * 20;
+    public static final int COOLDOWN_MAX = 45 * 20;
 
-    public static final int ROLL_INTERVAL = 12 * 20;
+    public static final int ROLL_INTERVAL = 8 * 20;
 
-    public static final float SPAWN_CHANCE = 0.35F;
+    public static final float SPAWN_CHANCE = 0.55F;
 
     public static final float DOUBLE_SPAWN_CHANCE = 0.25F;
 
-    public static final int MAX_ECHOES = 3;
+    public static final int MAX_ECHOES = 4;
 
     public static final double SPAWN_RADIUS_MIN = 4.0;
     public static final double SPAWN_RADIUS_MAX = 14.0;
