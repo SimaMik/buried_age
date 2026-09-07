@@ -20,6 +20,7 @@ import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
@@ -70,9 +71,10 @@ public class JournalScreen extends Screen {
     private static final int FINDS_PER_SPREAD = FINDS_PER_PAGE * 2;
 
     private static final int BUILDINGS_PER_SPREAD = 2;
-    private static final int BUILDING_ICON = 32;
-    private static final int LOOT_COLUMNS = 4;
-    private static final int LOOT_ROWS = 3;
+    private static final int BUILDING_ICON = 48;
+
+    private static final int LOOT_COLUMNS = 3;
+    private static final int LOOT_ROWS = 4;
     private static final int LOOT_STEP = 18;
     private static final int LOOT_X = BUILDING_ICON + 6;
     private static final float SMALL_TEXT = 0.75F;
@@ -397,8 +399,9 @@ public class JournalScreen extends Screen {
         graphics.fill(pageX, CONTENT_Y + 10, pageX + TEXT_WIDTH, CONTENT_Y + 11, known ? INK : FADED_INK);
 
         int iconY = CONTENT_Y + 15;
+        int pixels = pictureSize(building.icon());
         graphics.blit(RenderPipelines.GUI_TEXTURED, building.icon(), pageX, iconY, 0.0F, 0.0F,
-                BUILDING_ICON, BUILDING_ICON, BUILDING_ICON, BUILDING_ICON, known ? -1 : LOCKED_ICON_TINT);
+                BUILDING_ICON, BUILDING_ICON, pixels, pixels, pixels, pixels, known ? -1 : LOCKED_ICON_TINT);
 
         int textY = iconY + BUILDING_ICON + 6;
         if (known && !building.loot().isEmpty()) {
@@ -431,6 +434,17 @@ public class JournalScreen extends Screen {
                 : Component.translatable("journal.buried_age.unknown.building");
         int maxLines = (int) ((PAGE_BOTTOM - textY) / SMALL_LINE);
         this.drawWrapped(graphics, description, pageX, textY, TEXT_WIDTH, maxLines, known ? INK : FADED_INK, SMALL_TEXT);
+    }
+
+    /**
+     * The pictures come from the artist at whatever size the shot was, so the frame asks the loaded
+     * texture how big it is and shrinks the whole of it into the page rather than cutting a corner
+     * out of it.
+     */
+    private int pictureSize(Identifier picture) {
+        AbstractTexture texture = this.minecraft.getTextureManager().getTexture(picture);
+        int width = texture.getTexture().getWidth(0);
+        return width > 0 ? width : BUILDING_ICON;
     }
 
     private void drawWrapped(GuiGraphicsExtractor graphics, Component text, int x, int y, int width, int maxLines, int color) {
