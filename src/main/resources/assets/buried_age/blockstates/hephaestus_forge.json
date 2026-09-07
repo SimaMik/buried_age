@@ -1,12 +1,64 @@
 {
   "variants": {
-    "has_blueprint=false,facing=north": { "model": "buried_age:block/hephaestus_forge" },
-    "has_blueprint=false,facing=east": { "model": "buried_age:block/hephaestus_forge", "y": 90 },
-    "has_blueprint=false,facing=south": { "model": "buried_age:block/hephaestus_forge", "y": 180 },
-    "has_blueprint=false,facing=west": { "model": "buried_age:block/hephaestus_forge", "y": 270 },
-    "has_blueprint=true,facing=north": { "model": "buried_age:block/hephaestus_forge_blueprint" },
-    "has_blueprint=true,facing=east": { "model": "buried_age:block/hephaestus_forge_blueprint", "y": 90 },
-    "has_blueprint=true,facing=south": { "model": "buried_age:block/hephaestus_forge_blueprint", "y": 180 },
-    "has_blueprint=true,facing=west": { "model": "buried_age:block/hephaestus_forge_blueprint", "y": 270 }
+    "facing=north,half=lower,has_blueprint=false": {
+      "model": "buried_age:block/hephaestus_forge_lower"
+    },
+    "facing=east,half=lower,has_blueprint=false": {
+      "model": "buried_age:block/hephaestus_forge_lower",
+      "y": 90
+    },
+    "facing=south,half=lower,has_blueprint=false": {
+      "model": "buried_age:block/hephaestus_forge_lower",
+      "y": 180
+    },
+    "facing=west,half=lower,has_blueprint=false": {
+      "model": "buried_age:block/hephaestus_forge_lower",
+      "y": 270
+    },
+    "facing=north,half=lower,has_blueprint=true": {
+      "model": "buried_age:block/hephaestus_forge_lower"
+    },
+    "facing=east,half=lower,has_blueprint=true": {
+      "model": "buried_age:block/hephaestus_forge_lower",
+      "y": 90
+    },
+    "facing=south,half=lower,has_blueprint=true": {
+      "model": "buried_age:block/hephaestus_forge_lower",
+      "y": 180
+    },
+    "facing=west,half=lower,has_blueprint=true": {
+      "model": "buried_age:block/hephaestus_forge_lower",
+      "y": 270
+    },
+    "facing=north,half=upper,has_blueprint=false": {
+      "model": "buried_age:block/hephaestus_forge_upper"
+    },
+    "facing=east,half=upper,has_blueprint=false": {
+      "model": "buried_age:block/hephaestus_forge_upper",
+      "y": 90
+    },
+    "facing=south,half=upper,has_blueprint=false": {
+      "model": "buried_age:block/hephaestus_forge_upper",
+      "y": 180
+    },
+    "facing=west,half=upper,has_blueprint=false": {
+      "model": "buried_age:block/hephaestus_forge_upper",
+      "y": 270
+    },
+    "facing=north,half=upper,has_blueprint=true": {
+      "model": "buried_age:block/hephaestus_forge_upper_blueprint"
+    },
+    "facing=east,half=upper,has_blueprint=true": {
+      "model": "buried_age:block/hephaestus_forge_upper_blueprint",
+      "y": 90
+    },
+    "facing=south,half=upper,has_blueprint=true": {
+      "model": "buried_age:block/hephaestus_forge_upper_blueprint",
+      "y": 180
+    },
+    "facing=west,half=upper,has_blueprint=true": {
+      "model": "buried_age:block/hephaestus_forge_upper_blueprint",
+      "y": 270
+    }
   }
 }

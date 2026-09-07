@@ -25,6 +25,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -57,6 +58,11 @@ public class HephaestusForgeRenderer implements BlockEntityRenderer<HephaestusFo
     public HephaestusForgeRenderer(BlockEntityRendererProvider.Context context) {
         this.itemModelResolver = context.itemModelResolver();
         this.font = context.font();
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(HephaestusForgeBlockEntity blockEntity) {
+        return new AABB(blockEntity.getBlockPos()).expandTowards(0.0, 1.0, 0.0);
     }
 
     @Override

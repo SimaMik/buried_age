@@ -44,6 +44,9 @@
       },
       "limit": 8,
       "processor_type": "minecraft:capped"
+    },
+    {
+      "processor_type": "buried_age:hephaestus_forge"
     }
   ]
 }

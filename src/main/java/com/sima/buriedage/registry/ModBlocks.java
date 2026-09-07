@@ -20,7 +20,7 @@ public final class ModBlocks {
             HephaestusForgeBlock::new,
             properties -> properties
                     .mapColor(MapColor.METAL)
-                    .strength(5.0F, 1200.0F)
+                    .strength(1.5F, 1200.0F)
                     .requiresCorrectToolForDrops()
                     .sound(SoundType.ANVIL)
                     .noOcclusion());
