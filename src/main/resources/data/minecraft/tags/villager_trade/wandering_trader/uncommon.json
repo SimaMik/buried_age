@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "buried_age:wandering_trader/emerald_and_compass_buried_city_map"
+    "buried_age:wandering_trader/emerald_and_compass_buried_city_map",
+    "buried_age:wandering_trader/emerald_and_compass_buried_city_map_2"
   ]
 }
