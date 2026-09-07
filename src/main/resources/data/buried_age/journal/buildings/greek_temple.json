@@ -2,6 +2,10 @@
   "type": "building",
   "id": "greek/temple",
   "icon": "buried_age:textures/gui/journal/greek_temple.png",
-  "loot": [ "buried_age:hephaestus_hammer", "buried_age:ancient_blueprint", "buried_age:pegasus_egg", "minecraft:gold_ingot" ],
+  "loot": [
+    "buried_age:hephaestus_hammer", "buried_age:ancient_blueprint", "buried_age:pegasus_egg", "minecraft:music_disc_relic",
+    "minecraft:diamond", "minecraft:emerald", "minecraft:gold_ingot", "minecraft:lapis_lazuli",
+    "minecraft:bundle", "buried_age:lightning_pottery_sherd"
+  ],
   "order": 1
 }

@@ -2,6 +2,9 @@
   "type": "building",
   "id": "greek/house_rich",
   "icon": "buried_age:textures/gui/journal/greek_house_rich.png",
-  "loot": [ "minecraft:gold_ingot", "minecraft:emerald", "buried_age:amphora_pottery_sherd" ],
+  "loot": [
+    "minecraft:gold_ingot", "minecraft:emerald", "minecraft:lapis_lazuli", "buried_age:ancient_blueprint",
+    "minecraft:diamond", "minecraft:bundle", "buried_age:amphora_pottery_sherd", "buried_age:lightning_pottery_sherd"
+  ],
   "order": 5
 }

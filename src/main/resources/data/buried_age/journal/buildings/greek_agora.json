@@ -2,6 +2,9 @@
   "type": "building",
   "id": "greek/agora",
   "icon": "buried_age:textures/gui/journal/greek_agora.png",
-  "loot": [ "buried_age:lyre_pottery_sherd", "minecraft:emerald", "minecraft:bread" ],
+  "loot": [
+    "buried_age:lyre_pottery_sherd", "buried_age:hoplite_pottery_sherd", "buried_age:ancient_blueprint", "buried_age:pegasus_egg",
+    "minecraft:emerald", "minecraft:gold_ingot", "minecraft:lapis_lazuli", "minecraft:bundle"
+  ],
   "order": 2
 }

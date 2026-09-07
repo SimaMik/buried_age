@@ -2,6 +2,9 @@
   "type": "building",
   "id": "greek/workshop",
   "icon": "buried_age:textures/gui/journal/greek_workshop.png",
-  "loot": [ "minecraft:iron_ingot", "minecraft:brick", "buried_age:lightning_pottery_sherd" ],
+  "loot": [
+    "minecraft:iron_ingot", "buried_age:lightning_pottery_sherd", "buried_age:hoplite_pottery_sherd", "buried_age:ancient_blueprint",
+    "minecraft:bundle", "minecraft:lapis_lazuli", "minecraft:emerald", "minecraft:amethyst_shard"
+  ],
   "order": 8
 }

@@ -65,15 +65,24 @@ public class JournalScreen extends Screen {
 
     private static final int GRID_COLUMNS = 4;
     private static final int GRID_ROWS = 4;
-    private static final int CELL = 22;
+    private static final int CELL = 28;
+    private static final float FIND_ICON_SCALE = 1.5F;
+    private static final int FIND_ICON = Math.round(16 * FIND_ICON_SCALE);
+    private static final int FIND_ICON_INSET = (CELL - FIND_ICON) / 2;
     private static final int GRID_INSET = (TEXT_WIDTH - GRID_COLUMNS * CELL) / 2;
+    private static final int GRID_Y = CONTENT_Y + 2;
     private static final int FINDS_PER_PAGE = GRID_COLUMNS * GRID_ROWS;
     private static final int FINDS_PER_SPREAD = FINDS_PER_PAGE * 2;
 
     private static final int BUILDINGS_PER_SPREAD = 2;
     private static final int BUILDING_ICON = 32;
-    private static final int LOOT_ICON_STEP = 16;
-    private static final int DESCRIPTION_LINES = 8;
+    private static final int LOOT_COLUMNS = 4;
+    private static final int LOOT_ROWS = 3;
+    private static final int LOOT_STEP = 18;
+    private static final int LOOT_X = BUILDING_ICON + 6;
+    private static final float SMALL_TEXT = 0.75F;
+    private static final float SMALL_LINE = 9 * SMALL_TEXT;
+    private static final int PAGE_BOTTOM = ARROW_Y - 3;
 
     private static final int INK = 0xFF2A2013;
     private static final int FADED_INK = 0xFF6F6353;
@@ -100,7 +109,7 @@ public class JournalScreen extends Screen {
         this.tabs.add(new Tab(Component.translatable("journal.buried_age.tab.finds"), new ItemStack(Items.BRUSH), null));
         for (String group : this.book.groups()) {
             this.tabs.add(new Tab(Component.translatable(JournalEntry.Building.groupNameKey(group)),
-                    new ItemStack(Items.CHISELED_STONE_BRICKS), group));
+                    new ItemStack(Items.QUARTZ_PILLAR), group));
         }
     }
 
@@ -336,7 +345,8 @@ public class JournalScreen extends Screen {
             }
         }
         Component counter = Component.translatable("journal.buried_age.finds.counter", found, finds.size());
-        graphics.text(this.font, counter, LEFT_TEXT_X + TEXT_WIDTH - this.font.width(counter), HEADER_Y, INK, false);
+        int counterX = Math.round(LEFT_TEXT_X + TEXT_WIDTH - this.font.width(counter) * SMALL_TEXT);
+        this.drawWrapped(graphics, counter, counterX, HEADER_Y + 1, TEXT_WIDTH, 1, INK, SMALL_TEXT);
 
         JournalEntry.Find hoveredFind = null;
         boolean hoveredKnown = false;
@@ -346,15 +356,19 @@ public class JournalScreen extends Screen {
             int pageX = slot < FINDS_PER_PAGE ? LEFT_TEXT_X : RIGHT_TEXT_X;
             int inPage = slot % FINDS_PER_PAGE;
             int cellX = pageX + GRID_INSET + (inPage % GRID_COLUMNS) * CELL;
-            int cellY = CONTENT_Y + 4 + (inPage / GRID_COLUMNS) * CELL;
+            int cellY = GRID_Y + (inPage / GRID_COLUMNS) * CELL;
             JournalEntry.Find find = finds.get(i);
             ItemStack icon = find.icon(this.minecraft.level.registryAccess());
             boolean known = progress.hasFind(find.key());
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(cellX + FIND_ICON_INSET, cellY + FIND_ICON_INSET);
+            graphics.pose().scale(FIND_ICON_SCALE, FIND_ICON_SCALE);
             if (known) {
-                graphics.item(icon, cellX + 3, cellY + 3);
+                graphics.item(icon, 0, 0);
             } else {
-                this.drawSilhouette(graphics, find, icon, cellX + 3, cellY + 3);
+                this.drawSilhouette(graphics, find, icon, 0, 0);
             }
+            graphics.pose().popMatrix();
             if (inside(x, y, cellX, cellY, CELL, CELL)) {
                 hoveredFind = find;
                 hoveredKnown = known;
@@ -389,7 +403,7 @@ public class JournalScreen extends Screen {
         }
     }
 
-    /** One building fills one page: name, icon with the loot beside it, then the description. */
+    /** One building fills one page: name, icon with the loot grid beside it, then the description in small print. */
     private void drawBuilding(GuiGraphicsExtractor graphics, JournalProgress progress, JournalEntry.Building building,
                               int pageX, float x, float y, int mouseX, int mouseY) {
         boolean known = progress.hasBuilding(building.id());
@@ -401,39 +415,53 @@ public class JournalScreen extends Screen {
         graphics.blit(RenderPipelines.GUI_TEXTURED, building.icon(), pageX, iconY, 0.0F, 0.0F,
                 BUILDING_ICON, BUILDING_ICON, BUILDING_ICON, BUILDING_ICON, known ? -1 : LOCKED_ICON_TINT);
 
+        int textY = iconY + BUILDING_ICON + 6;
         if (known && !building.loot().isEmpty()) {
-            int lootX = pageX + BUILDING_ICON + 6;
-            graphics.text(this.font, Component.translatable("journal.buried_age.loot"), lootX, iconY, FADED_INK, false);
-            int lootY = iconY + 12;
-            int column = 0;
+            int lootX = pageX + LOOT_X;
+            this.drawWrapped(graphics, Component.translatable("journal.buried_age.loot"), lootX, iconY, TEXT_WIDTH - LOOT_X, 1, FADED_INK, SMALL_TEXT);
+            int lootY = iconY + 10;
+            int shown = 0;
             for (Identifier id : building.loot()) {
+                if (shown >= LOOT_COLUMNS * LOOT_ROWS) {
+                    break;
+                }
                 if (!BuiltInRegistries.ITEM.containsKey(id)) {
                     continue;
                 }
-                int slotX = lootX + column * LOOT_ICON_STEP;
-                if (slotX + LOOT_ICON_STEP > pageX + TEXT_WIDTH) {
-                    break;
-                }
+                int slotX = lootX + (shown % LOOT_COLUMNS) * LOOT_STEP;
+                int slotY = lootY + (shown / LOOT_COLUMNS) * LOOT_STEP;
                 ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.getValue(id));
-                graphics.item(stack, slotX, lootY);
-                if (inside(x, y, slotX, lootY, LOOT_ICON_STEP, LOOT_ICON_STEP)) {
+                graphics.item(stack, slotX, slotY);
+                if (inside(x, y, slotX, slotY, 16, 16)) {
                     graphics.setTooltipForNextFrame(this.font, stack.getHoverName(), mouseX, mouseY);
                 }
-                column++;
+                shown++;
             }
+            int rows = (shown + LOOT_COLUMNS - 1) / LOOT_COLUMNS;
+            textY = Math.max(textY, lootY + rows * LOOT_STEP + 2);
         }
 
         Component description = known
                 ? Component.translatable(building.descriptionKey())
                 : Component.translatable("journal.buried_age.unknown.building");
-        this.drawWrapped(graphics, description, pageX, iconY + BUILDING_ICON + 8, TEXT_WIDTH, DESCRIPTION_LINES, known ? INK : FADED_INK);
+        int maxLines = (int) ((PAGE_BOTTOM - textY) / SMALL_LINE);
+        this.drawWrapped(graphics, description, pageX, textY, TEXT_WIDTH, maxLines, known ? INK : FADED_INK, SMALL_TEXT);
     }
 
     private void drawWrapped(GuiGraphicsExtractor graphics, Component text, int x, int y, int width, int maxLines, int color) {
-        List<FormattedCharSequence> lines = this.font.split(text, width);
+        this.drawWrapped(graphics, text, x, y, width, maxLines, color, 1.0F);
+    }
+
+    /** Wraps {@code text} into {@code width} book units and draws it under {@code scale}, so the font shrinks with it. */
+    private void drawWrapped(GuiGraphicsExtractor graphics, Component text, int x, int y, int width, int maxLines, int color, float scale) {
+        List<FormattedCharSequence> lines = this.font.split(text, (int) (width / scale));
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(x, y);
+        graphics.pose().scale(scale, scale);
         for (int i = 0; i < Math.min(maxLines, lines.size()); i++) {
-            graphics.text(this.font, lines.get(i), x, y + i * 9, color, false);
+            graphics.text(this.font, lines.get(i), 0, i * 9, color, false);
         }
+        graphics.pose().popMatrix();
     }
 
     /**

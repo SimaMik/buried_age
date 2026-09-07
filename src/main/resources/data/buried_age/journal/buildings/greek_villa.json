@@ -2,6 +2,9 @@
   "type": "building",
   "id": "greek/villa",
   "icon": "buried_age:textures/gui/journal/greek_villa.png",
-  "loot": [ "minecraft:gold_ingot", "minecraft:diamond", "buried_age:ancient_blueprint" ],
+  "loot": [
+    "minecraft:gold_ingot", "minecraft:diamond", "buried_age:ancient_blueprint", "buried_age:pegasus_egg",
+    "minecraft:emerald", "minecraft:lapis_lazuli", "minecraft:bundle", "buried_age:amphora_pottery_sherd"
+  ],
   "order": 4
 }

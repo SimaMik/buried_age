@@ -2,6 +2,9 @@
   "type": "building",
   "id": "greek/house_medium",
   "icon": "buried_age:textures/gui/journal/greek_house_medium.png",
-  "loot": [ "minecraft:iron_ingot", "minecraft:bread", "buried_age:amphora_pottery_sherd" ],
+  "loot": [
+    "minecraft:iron_ingot", "buried_age:amphora_pottery_sherd", "buried_age:hoplite_pottery_sherd", "buried_age:ancient_blueprint",
+    "minecraft:bundle", "minecraft:lapis_lazuli", "minecraft:emerald", "minecraft:gold_ingot"
+  ],
   "order": 6
 }
